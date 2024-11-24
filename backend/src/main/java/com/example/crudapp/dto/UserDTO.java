@@ -50,14 +50,14 @@ public class UserDTO {
         this.age = age;
     }
 
-    // @Override
-    // public String toString() {
-    //     return "UserDTO{" +
-    //            "id=" + id +
-    //            ", name='" + name + '\'' +
-    //            ", email='" + email + '\'' +
-    //            ", age=" + age +
-    //            '}';
-    // }
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+               "id=" + id +
+               ", name='" + name + '\'' +
+               ", email='" + email + '\'' +
+               ", age=" + age +
+               '}';
+    }
 
 }
