@@ -1,42 +1,29 @@
 package com.example.crudapp.repository;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.example.crudapp.model.User;
+
+import jakarta.transaction.Transactional;
+
 @Repository
-public class UserRepository {
-    private final JdbcTemplate jdbcTemplate;
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    public UserRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    @Query("SELECT u FROM User u WHERE u.age > :age")
+    List<User> findUsersByAgeGreaterThan(@Param("age") int age);
 
-    public ResponseEntity<String> createUser(String name, String email, int age){
-        String sql = "INSERT INTO users VALUES (?, ?, ?)";
-        try{
-            int rowsAffected = jdbcTemplate.update(sql, name, email, age);
-            if(rowsAffected > 0) {
-                return ResponseEntity.status(HttpStatus.CREATED).body("User Created Successfully");
-            }
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Fail to create user");
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
-        }
-    }
+    @Query(value = "SELECT * FROM users WHERE email = :email", nativeQuery = true)
+    User findUserByEmail(@Param("email") String email);
 
-    public ResponseEntity<String> udpateUser(String name, String email, int age){
-        String sql = "UPDATE users SET name = ?, email = ?, age = ?";
-        try {
-            int rowsAffected = jdbcTemplate.update(sql, name, email, age);
-            if(rowsAffected > 0){
-                return ResponseEntity.ok("User updated successfully");
-            }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User updated successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
-        }
-    } 
-
+    @Modifying
+    @Transactional
+    @Query("UPDATE User u SET u.age = :age WHERE u.id = :id")
+    void updateUserAge(@Param("id") Long id, @Param("age") int age);
 }
+
