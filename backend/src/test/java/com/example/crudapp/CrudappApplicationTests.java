@@ -10,7 +10,6 @@ class CrudappApplicationTests {
 
 	@Test
     void simpleTest() {
-		System.out.println("a");
         assertTrue(true);
     }
 
