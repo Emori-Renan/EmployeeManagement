@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.example.crudapp.model.UserLogin;
 import com.example.crudapp.repository.UserLoginRepository;
 
 @Service
@@ -19,14 +18,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
-        UserLogin userLogin = userLoginRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username or email: " + usernameOrEmail));
+        // Primeiro, tenta buscar pelo email
+        return userLoginRepository.findByEmail(usernameOrEmail)
+                .orElseGet(() -> userLoginRepository.findByUsername(usernameOrEmail)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found with username or email: " + usernameOrEmail)));
 
-        return new org.springframework.security.core.userdetails.User(
-                userLogin.getUsername(),
-                userLogin.getPassword(),
-                userLogin.getAuthorities()
-        );
     }
 
 }

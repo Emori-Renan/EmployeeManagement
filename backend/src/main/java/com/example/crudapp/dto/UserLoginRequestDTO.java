@@ -2,7 +2,12 @@ package com.example.crudapp.dto;
 
 public class UserLoginRequestDTO {
     private String usernameOrEmail;  
-    private String password;         
+    private String password;  
+    
+    public UserLoginRequestDTO(String usernameOrEmail, String password){
+        this.usernameOrEmail = usernameOrEmail;
+        this.password = password;
+    }
 
     public String getUsernameOrEmail() {
         return usernameOrEmail;

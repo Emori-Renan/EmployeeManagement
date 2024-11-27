@@ -24,6 +24,7 @@ public class UserLogin implements UserDetails {
     private String email;
     private String password;
     private String role; // "ADMIN" or "EMPLOYEE"
+    
 
     public UserLogin() {
     }
