@@ -12,7 +12,7 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10h
+    private static final long EXPIRATION_TIME = 1000L * 60 * 60 * 10; // 10h
 
     private final SecretKey key;
 
