@@ -1,8 +1,8 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
 import { ReactNode } from "react";
 import Navbar from "./components/Navbar";
+import Drawer from "./components/Drawer";
 
 export const metadata: Metadata = {
   title: "Application",
@@ -15,18 +15,29 @@ export default function RootLayout({
   children: ReactNode;
 }) {
   return (
-    <html lang="en" data-theme="cupcake">
+    <html lang="en" data-theme="cupcake" >
       <body>
-        <header>
-        <link rel="icon" href="/favicon.png" />
+        <header className="navbar sticky top-0 z-50 p-0 ">
           <Navbar />
         </header>
-        
-        <main>{children}</main>
 
-        <footer>
-          <p>© 2024 Your Company</p>
+        <main>
+          <div className="drawer">
+            <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+            <div className="drawer-content flex">
+              {/* Page content here */}
+
+              {children}
+
+            </div>
+            <Drawer />
+          </div>
+        </main>
+
+        <footer className="flex items-center justify-center bottom-0 fixed h-12 w-full">
+          <p className="text-sm text-gray-400">© 2024 My Application</p>
         </footer>
+
       </body>
     </html>
   );
