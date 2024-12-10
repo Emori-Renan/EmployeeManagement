@@ -4,7 +4,7 @@
 const Navbar = () => {
     return (
       <div className="navbar bg-orange-50 shadow-sm mb-3">
-        <link rel="icon" href="/favicon.png" />
+        
         <div className="flex-none">
         <label htmlFor="my-drawer" className="btn drawer-button">
                     <svg

@@ -1,3 +1,4 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
 import { ReactNode } from "react";
@@ -16,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" data-theme="cupcake" >
-      <body>
+      <body >
         <header className="navbar sticky top-0 z-50 p-0 ">
           <Navbar />
         </header>
@@ -37,7 +38,7 @@ export default function RootLayout({
         <footer className="flex items-center justify-center bottom-0 fixed h-12 w-full">
           <p className="text-sm text-gray-400">© 2024 My Application</p>
         </footer>
-
+        
       </body>
     </html>
   );
