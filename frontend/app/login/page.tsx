@@ -1,12 +1,15 @@
 "use client"
 import { FormEvent, useState } from "react";
 import { login } from "../controller/LoginController";
+import { AuthError } from "../errors/AuthError";
 
 
 export default function LoginPage() {
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [usernameError, setUsernameError] = useState(false);
+    const [passwordError, setPasswordError] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (e: FormEvent) => {
@@ -14,11 +17,28 @@ export default function LoginPage() {
         console.log("clickei", username, password)
         try {
             const data = await login({ usernameOrEmail: username, password: password });
-            console.log("Login successful:", data);
+            if (data instanceof AuthError) {
+                throw data;
+            }
             // Handle successful login (e.g., redirect or store tokens)
-            console.log("Login successful:", data);
-        } catch (err) {
-            setError((err as Error).message);
+            localStorage.setItem('token', data.token ?? '');
+
+        } catch (err: any) {
+            console.log("deu erro ai patrao ", err.statusCode);
+
+            setUsernameError(false);
+            setPasswordError(false);
+            setError(null);
+
+            if (err.statusCode === 404) {
+                setUsernameError(true);
+                setError("User not found");
+            } else if (err.statusCode === 401) {
+                setPasswordError(true);
+                setError("Invalid credentials");
+            } else {
+                throw new AuthError("An unexpected error occurred", 500);
+            }
         }
     };
 
@@ -29,12 +49,13 @@ export default function LoginPage() {
                 <div className="text-center lg:text-left">
                     <h1 className="text-5xl font-bold">Login now!</h1>
                     <p className="py-6">
-                        Provident cupiditate voluptatem et in. 
+                        Provident cupiditate voluptatem et in.
                     </p>
                 </div>
                 <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-                    <form className="card-body" onSubmit={handleSubmit}>
-                        <label className="input input-bordered flex items-center gap-2">
+                    <form className="card-body gap-0" onSubmit={handleSubmit}>
+                        <label className={`input input-bordered flex items-center
+                             ${usernameError ? ' input-error w-full max-w-xs' : 'mb-3'}`}>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 16 16"
@@ -47,7 +68,13 @@ export default function LoginPage() {
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)} />
                         </label>
-                        <label className="input input-bordered flex items-center gap-2">
+                        {usernameError &&
+                        <div className="label p-0 p-2 pt-0">
+                            <span className="label-text-alt text-error">Username not found!</span>
+                        </div>
+                        }
+                        <label className={`input input-bordered flex items-center
+                             ${passwordError ? ' input-error w-full max-w-xs' : ''}`}>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 16 16"
@@ -62,6 +89,11 @@ export default function LoginPage() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)} />
                         </label>
+                        {passwordError &&
+                        <div className="label pt-0">
+                            <span className="label-text-alt text-error">Password is wrong!</span>
+                        </div>
+                        }
                         <div className="form-control mt-6">
                             <button className="btn btn-primary">Login</button>
                         </div>
