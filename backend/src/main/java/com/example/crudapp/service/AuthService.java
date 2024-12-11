@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.crudapp.dto.AuthenticationResponse;
 import com.example.crudapp.dto.UserLoginResponseDTO;
 import com.example.crudapp.model.UserLogin;
 import com.example.crudapp.repository.UserLoginRepository;
@@ -29,36 +30,38 @@ public class AuthService {
         this.userLoginRepository = userLoginRepository;
     }
 
-    public ResponseEntity<?> authenticate(String usernameOrEmail, String rawPassword) {
+    public ResponseEntity<AuthenticationResponse> authenticate(String usernameOrEmail, String rawPassword) {
         String username = usernameOrEmail;
         UserLogin user = null;
 
         if (isEmail(usernameOrEmail)) {
             user = userLoginRepository.findByEmail(usernameOrEmail).orElse(null);
             if (user == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("User not found with email: " + usernameOrEmail);
+                AuthenticationResponse errorResponse = new AuthenticationResponse(null,
+                        "User not found with email: " + usernameOrEmail);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
             }
             username = user.getUsername();
         } else {
             user = userLoginRepository.findByUsername(usernameOrEmail).orElse(null);
             if (user == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("User not found with username: " + usernameOrEmail);
+                AuthenticationResponse errorResponse = new AuthenticationResponse(null,
+                        "User not found with username: " + usernameOrEmail);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
             }
             username = user.getUsername();
         }
 
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, rawPassword)
-            );
+                    new UsernamePasswordAuthenticationToken(username, rawPassword));
             UserLogin authenticatedUser = (UserLogin) authentication.getPrincipal();
             String token = jwtUtil.generateToken(authenticatedUser.getUsername(), authenticatedUser.getRole());
-            return ResponseEntity.ok(new UserLoginResponseDTO(token, "Login successful"));
+            AuthenticationResponse successResponse = new AuthenticationResponse(token, "Login successful");
+            return ResponseEntity.ok(successResponse);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid password.");
+            AuthenticationResponse errorResponse = new AuthenticationResponse(null, "Invalid password.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
     }
 
