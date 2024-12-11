@@ -1,7 +1,9 @@
 package com.example.crudapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,8 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.crudapp.dto.UserLoginRequestDTO;
 import com.example.crudapp.dto.UserLoginResponseDTO;
 import com.example.crudapp.dto.UserRegistrationDTO;
+import com.example.crudapp.dto.UserRegistrationResult;
 import com.example.crudapp.service.AuthService;
 import com.example.crudapp.service.UserLoginService;
+
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -32,13 +37,18 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody UserRegistrationDTO request) {
-        userLoginService.registerUser(
-            request.getUsername(),
-            request.getEmail(),
-            request.getPassword(),
-            request.getRole()
-        );
-        return "User registered successfully";
+    public ResponseEntity<UserRegistrationResult> register(
+            @RequestBody @Valid UserRegistrationDTO request, BindingResult result) {
+
+        if (result.hasErrors()) {
+            StringBuilder sb = new StringBuilder();
+            result.getAllErrors().forEach(error -> sb.append(error.getDefaultMessage()).append("; "));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                 .body(new UserRegistrationResult(false, sb.toString()));
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body(new UserRegistrationResult(true, "User registered successfully"));
     }
+    
 }
