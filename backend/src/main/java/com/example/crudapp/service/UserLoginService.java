@@ -1,6 +1,7 @@
 package com.example.crudapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +26,24 @@ public class UserLoginService {
         user.setPassword(hashedPassword);
         user.setRole(role);
 
-        try {
+        
+
+         try {
+            if (userRepository.findByUsername(username).isPresent()) {
+                return new UserRegistrationResult(false, "Username already exists.");
+            }
+
+            if (userRepository.findByEmail(email).isPresent()) {
+                return new UserRegistrationResult(false, "Email already exists.");
+            }
+
             userRepository.save(user);
             return new UserRegistrationResult(true, "User registered successfully");
+
+        } catch (DataIntegrityViolationException e) {
+            return new UserRegistrationResult(false, "Unexpected error occurred: " + e.getMessage());
         } catch (Exception e) {
-            return new UserRegistrationResult(false, "Unexpected error ocurred." + e);
+            return new UserRegistrationResult(false, "An unexpected error occurred: " + e.getMessage());
         }
     }
 }
