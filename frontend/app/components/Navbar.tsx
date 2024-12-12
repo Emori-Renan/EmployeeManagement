@@ -27,10 +27,10 @@ const Navbar = () => {
         <Link href="/" className="btn btn-ghost text-xl">My Application</Link>
       </div>
       <div className="flex-none">
-      <a className="btn btn-ghost text-m">Sign in</a>
+      <a href="/register" className="btn btn-ghost text-m">Sign up</a>
       </div>
       <div className="flex-none">
-      <a href="/login" className="btn btn-ghost text-m">Login</a>
+      <a href="/login" className="btn btn-ghost text-m">Sign in</a>
       </div>
       <div className="flex-none">
       <a className="btn btn-ghost text-m">Logout</a>
