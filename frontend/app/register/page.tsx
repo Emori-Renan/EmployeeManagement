@@ -3,7 +3,8 @@ import { FormEvent, useState } from "react";
 import { AuthError } from "../errors/AuthError";
 import ErrorMessage from "../components/ErrorMessage";
 import { register } from "../controller/RegisterController";
-
+import { useRouter } from "next/router";
+import LoadingModal from "../components/Loading";
 
 export default function RegisterPage() {
 
@@ -17,22 +18,36 @@ export default function RegisterPage() {
     const [confirmPasswordError, setConfirmPasswordError] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [isLoading, setIsLoading] = useState(false)
+
+    const router = useRouter();
+
+    const delay = (ms:number) => {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+
+
         if(!validateForm()){
             return;
         }
             
         try {
+            setIsLoading(true);
             const response = await register({  email: email,
                 username: username,
                 password: password,
                 role: "EMPLOYEE"
             });
-            console.log(response)
+            
             if (!response.success) {
                 throw new Error(response.message);
             }
+            await delay(10000);
+            router.push("/");
+            return;
 
         } catch (err: any) {
             console.log("ta fudido kk "+err);
@@ -53,6 +68,8 @@ export default function RegisterPage() {
             } else {
                 throw new AuthError("An unexpected error occurred sifudeu" + err, 500);
             }
+        } finally {
+                setIsLoading(false);
         }
     };
 
@@ -175,6 +192,8 @@ export default function RegisterPage() {
                     </form>
                 </div>
             </div>
+            <LoadingModal isLoading={isLoading} message="Signing in..." />
         </div>
+
     )
 }

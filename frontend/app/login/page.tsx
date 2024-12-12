@@ -1,10 +1,17 @@
 "use client"
-import { FormEvent, useState } from "react";
+import { FormEvent,  useEffect,  useState } from "react";
 import { login } from "../controller/LoginController";
 import { AuthError } from "../errors/AuthError";
+import { useRouter } from 'next/navigation'
+import LoadingModal from "../components/Loading";
+
 
 
 export default function LoginPage() {
+
+    const delay = (ms:number) => {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -12,16 +19,30 @@ export default function LoginPage() {
     const [passwordError, setPasswordError] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const [isLoading, setIsLoading] = useState(false);
+
+    const router = useRouter();
+
+ 
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         console.log("clickei", username, password)
         try {
+            setIsLoading(true);
             const data = await login({ usernameOrEmail: username, password: password });
             if (data instanceof AuthError) {
                 throw data;
             }
             // Handle successful login (e.g., redirect or store tokens)
             localStorage.setItem('token', data.token ?? '');
+            await delay(3000);
+            router.push('/');
+
+            console.log(router, "router ae");
+            const storedToken = localStorage.getItem('token')
+            console.log(storedToken)
+            return;
 
         } catch (err: any) {
             console.log("deu erro ai patrao ", err.statusCode);
@@ -39,6 +60,8 @@ export default function LoginPage() {
             } else {
                 throw new AuthError("An unexpected error occurred", 500);
             }
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -100,6 +123,7 @@ export default function LoginPage() {
                     </form>
                 </div>
             </div>
+            <LoadingModal isLoading={isLoading} message="Signing up" />
         </div>
     )
 }
