@@ -3,15 +3,11 @@ package com.example.crudapp.service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.example.crudapp.dto.AuthenticationResponse;
-import com.example.crudapp.dto.UserLoginResponseDTO;
 import com.example.crudapp.model.UserLogin;
 import com.example.crudapp.repository.UserLoginRepository;
 import com.example.crudapp.util.JwtUtil;
@@ -31,7 +27,7 @@ public class AuthService {
     }
 
     public ResponseEntity<AuthenticationResponse> authenticate(String usernameOrEmail, String rawPassword) {
-        String username = usernameOrEmail;
+        String username;
         UserLogin user = null;
 
         if (isEmail(usernameOrEmail)) {

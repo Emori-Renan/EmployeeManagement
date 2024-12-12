@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.crudapp.dto.AuthenticationResponse;
 import com.example.crudapp.dto.UserLoginRequestDTO;
-import com.example.crudapp.dto.UserLoginResponseDTO;
 import com.example.crudapp.dto.UserRegistrationDTO;
 import com.example.crudapp.dto.UserRegistrationResult;
 import com.example.crudapp.service.AuthService;
