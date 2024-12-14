@@ -3,8 +3,9 @@ import { FormEvent, useState } from "react";
 import { AuthError } from "../errors/AuthError";
 import ErrorMessage from "../components/ErrorMessage";
 import { register } from "../controller/RegisterController";
-import { useRouter } from "next/router";
+import { useRouter } from 'next/navigation'
 import LoadingModal from "../components/Loading";
+import { delay } from "../utils/functions";
 
 export default function RegisterPage() {
 
@@ -21,10 +22,6 @@ export default function RegisterPage() {
     const [isLoading, setIsLoading] = useState(false)
 
     const router = useRouter();
-
-    const delay = (ms:number) => {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-      }
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -45,12 +42,11 @@ export default function RegisterPage() {
             if (!response.success) {
                 throw new Error(response.message);
             }
-            await delay(10000);
+            await delay(4000);
             router.push("/");
             return;
 
         } catch (err: any) {
-            console.log("ta fudido kk "+err);
             
             if(err == "Error: Email already exists."){
                 setError(err.message);
@@ -192,7 +188,7 @@ export default function RegisterPage() {
                     </form>
                 </div>
             </div>
-            <LoadingModal isLoading={isLoading} message="Signing in..." />
+            <LoadingModal isLoading={isLoading} message="Registering..." />
         </div>
 
     )

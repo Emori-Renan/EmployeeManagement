@@ -1,17 +1,18 @@
 "use client"
-import { FormEvent,  useEffect,  useState } from "react";
+import { FormEvent, useState } from "react";
 import { login } from "../controller/LoginController";
 import { AuthError } from "../errors/AuthError";
 import { useRouter } from 'next/navigation'
 import LoadingModal from "../components/Loading";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../store/authSlice";
+import { saveToken } from "../utils/auth";
+import { delay } from "../utils/functions";
 
 
 
 export default function LoginPage() {
 
-    const delay = (ms:number) => {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-      }
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -21,13 +22,11 @@ export default function LoginPage() {
 
     const [isLoading, setIsLoading] = useState(false);
 
+    const dispatch = useDispatch();
     const router = useRouter();
-
- 
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        console.log("clickei", username, password)
         try {
             setIsLoading(true);
             const data = await login({ usernameOrEmail: username, password: password });
@@ -35,13 +34,11 @@ export default function LoginPage() {
                 throw data;
             }
             // Handle successful login (e.g., redirect or store tokens)
-            localStorage.setItem('token', data.token ?? '');
+            const token = data.token ?? ''
+            dispatch(loginSuccess(token));
+            saveToken(token)
             await delay(3000);
             router.push('/');
-
-            console.log(router, "router ae");
-            const storedToken = localStorage.getItem('token')
-            console.log(storedToken)
             return;
 
         } catch (err: any) {
@@ -92,9 +89,9 @@ export default function LoginPage() {
                                 onChange={(e) => setUsername(e.target.value)} />
                         </label>
                         {usernameError &&
-                        <div className="label p-0 p-2 pt-0">
-                            <span className="label-text-alt text-error">Username not found!</span>
-                        </div>
+                            <div className="label p-0 p-2 pt-0">
+                                <span className="label-text-alt text-error">Username not found!</span>
+                            </div>
                         }
                         <label className={`input input-bordered flex items-center
                              ${passwordError ? ' input-error w-full max-w-xs' : ''}`}>
@@ -113,9 +110,9 @@ export default function LoginPage() {
                                 onChange={(e) => setPassword(e.target.value)} />
                         </label>
                         {passwordError &&
-                        <div className="label pt-0">
-                            <span className="label-text-alt text-error">Password is wrong!</span>
-                        </div>
+                            <div className="label pt-0">
+                                <span className="label-text-alt text-error">Password is wrong!</span>
+                            </div>
                         }
                         <div className="form-control mt-6">
                             <button className="btn btn-primary">Login</button>

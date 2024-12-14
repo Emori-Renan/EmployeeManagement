@@ -1,8 +1,27 @@
 "use client";
-
+import { useDispatch } from "react-redux";
+import { logout as logoutAction } from "../store/authSlice";
+import { useRouter } from 'next/navigation'
 import Link from "next/link";
+import { clearToken } from "../utils/auth";
+import LoadingModal from "./Loading";
+import { useState } from "react";
+import { delay } from "../utils/functions";
 
 const Navbar = () => {
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false)
+
+  const logout = async () => {
+    clearToken()
+    dispatch(logoutAction());
+    setIsLoading(true)
+    await delay(2000);
+    setIsLoading(false);
+    router.push("/")
+  };
+
   return (
     <div className="navbar bg-orange-50 shadow-sm">
 
@@ -27,14 +46,15 @@ const Navbar = () => {
         <Link href="/" className="btn btn-ghost text-xl">My Application</Link>
       </div>
       <div className="flex-none">
-      <a href="/register" className="btn btn-ghost text-m">Sign up</a>
+        <Link href="/register" className="btn btn-ghost text-m">Sign up</Link>
       </div>
       <div className="flex-none">
-      <a href="/login" className="btn btn-ghost text-m">Sign in</a>
+        <Link href="/login" className="btn btn-ghost text-m">Sign in</Link>
       </div>
       <div className="flex-none">
-      <a className="btn btn-ghost text-m">Logout</a>
+        <button onClick={logout} className="btn btn-ghost text-m">Logout</button>
       </div>
+      <LoadingModal isLoading={isLoading} message="Loggin out..." />
     </div>
   );
 };
