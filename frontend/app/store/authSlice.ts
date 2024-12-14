@@ -1,15 +1,15 @@
 // app/store/authSlice.ts
 import { createSlice } from '@reduxjs/toolkit';
-import { getToken } from '../utils/auth';
 
-const token = typeof window !== 'undefined' ? getToken() : null;
+// Define the initial state without token
+const initialState = {
+  token: null,
+  isAuthenticated: false,
+};
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState: {
-    token: token ?? null,
-    isAuthenticated: !!token,
-  },
+  initialState,
   reducers: {
     loginSuccess(state, action) {
       state.token = action.payload;
@@ -19,8 +19,12 @@ const authSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
     },
+    setToken(state, action) {
+      state.token = action.payload;
+      state.isAuthenticated = !!action.payload;
+    },
   },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { loginSuccess, logout, setToken } = authSlice.actions;
 export default authSlice.reducer;

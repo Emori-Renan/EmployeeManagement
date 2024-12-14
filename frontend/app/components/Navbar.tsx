@@ -1,5 +1,5 @@
 "use client";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout as logoutAction } from "../store/authSlice";
 import { useRouter } from 'next/navigation'
 import Link from "next/link";
@@ -7,18 +7,25 @@ import { clearToken } from "../utils/auth";
 import LoadingModal from "./Loading";
 import { useState } from "react";
 import { delay } from "../utils/functions";
+import { RootState } from "../store/store";
+import { useToast } from "../context/ToastContext";
 
 const Navbar = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false)
 
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
+  
+  const { showToast } = useToast();
+  
   const logout = async () => {
-    clearToken()
-    dispatch(logoutAction());
+    clearToken();
     setIsLoading(true)
     await delay(2000);
     setIsLoading(false);
+    dispatch(logoutAction());
+    showToast("User logout successfully!", "success");
     router.push("/")
   };
 
@@ -45,16 +52,15 @@ const Navbar = () => {
       <div className="flex-1 pl-3">
         <Link href="/" className="btn btn-ghost text-xl">My Application</Link>
       </div>
-      <div className="flex-none">
+      {!isAuthenticated ? (<><div className="flex-none">
         <Link href="/register" className="btn btn-ghost text-m">Sign up</Link>
-      </div>
-      <div className="flex-none">
-        <Link href="/login" className="btn btn-ghost text-m">Sign in</Link>
-      </div>
-      <div className="flex-none">
+      </div><div className="flex-none">
+          <Link href="/login" className="btn btn-ghost text-m">Sign in</Link>
+        </div></>) : (<div className="flex-none">
         <button onClick={logout} className="btn btn-ghost text-m">Logout</button>
-      </div>
+      </div>)}
       <LoadingModal isLoading={isLoading} message="Loggin out..." />
+      
     </div>
   );
 };

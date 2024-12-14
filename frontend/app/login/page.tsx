@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "../store/authSlice";
 import { saveToken } from "../utils/auth";
 import { delay } from "../utils/functions";
+import { useToast } from "../context/ToastContext";
 
 
 
@@ -21,6 +22,7 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
 
     const [isLoading, setIsLoading] = useState(false);
+    const { showToast } = useToast();
 
     const dispatch = useDispatch();
     const router = useRouter();
@@ -38,6 +40,7 @@ export default function LoginPage() {
             dispatch(loginSuccess(token));
             saveToken(token)
             await delay(3000);
+            showToast("User logged in successfully!", "success");
             router.push('/');
             return;
 
