@@ -5,9 +5,10 @@ import Drawer from "./components/Drawer";
 import "./globals.css";
 import { Provider, useDispatch } from "react-redux";
 import store from "./store/store";
-import { ToastProvider } from "./context/ToastContext";
+import { ToastProvider, useToast } from "./context/ToastContext";
 import ToastContainer from "./components/ToastContainer";
-import { setToken } from "./store/authSlice";
+import { logout, setToken } from "./store/authSlice";
+import { getToken, isTokenValid } from "./utils/auth";
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -21,12 +22,18 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
 
 const MainLayout = ({ children }: { children: ReactNode }) => {
   const dispatch = useDispatch();
+  const { showToast } = useToast();
 
   useEffect(() => {
     // Only run this code on the client side
-    const token = localStorage.getItem("token");
-    if (token) {
+    const token = getToken();
+    if (token && isTokenValid(token)) {
       dispatch(setToken(token)); // Set token in Redux store
+    } 
+    if (token) {
+      localStorage.removeItem("token"); // Remove expired/invalid token
+      dispatch(logout()); // Clear Redux store
+      showToast("Session expired. Log in again.", "info");
     }
   }, [dispatch]);
 

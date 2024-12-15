@@ -27,8 +27,29 @@ export default function LoginPage() {
     const dispatch = useDispatch();
     const router = useRouter();
 
+    const validateForm = () => {
+        setUsernameError(false);
+        setPasswordError(false);
+        setError(null);
+
+        if(username == ""){            
+            setUsernameError(true);
+            setError("Username is required!");
+            return false;
+        }
+        if(password == ""){
+            setPasswordError(true);
+            setError("A password is required!");
+            return false;
+        }
+        return true;
+    }
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        if(!validateForm()){
+            return;
+        }
         try {
             setIsLoading(true);
             const data = await login({ usernameOrEmail: username, password: password });
@@ -40,10 +61,9 @@ export default function LoginPage() {
             dispatch(loginSuccess(token));
             saveToken(token)
             await delay(3000);
-            showToast("User logged in successfully!", "success");
             router.push('/');
+            showToast("User logged in successfully!", "success");
             return;
-
         } catch (err: any) {
             console.log("deu erro ai patrao ", err.statusCode);
 
@@ -93,7 +113,7 @@ export default function LoginPage() {
                         </label>
                         {usernameError &&
                             <div className="label p-0 p-2 pt-0">
-                                <span className="label-text-alt text-error">Username not found!</span>
+                                <span className="label-text-alt text-error">{error}</span>
                             </div>
                         }
                         <label className={`input input-bordered flex items-center
@@ -114,7 +134,7 @@ export default function LoginPage() {
                         </label>
                         {passwordError &&
                             <div className="label pt-0">
-                                <span className="label-text-alt text-error">Password is wrong!</span>
+                                <span className="label-text-alt text-error">{error}</span>
                             </div>
                         }
                         <div className="form-control mt-6">
