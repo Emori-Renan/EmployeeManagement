@@ -46,7 +46,7 @@ class WorkdayServiceTest {
 
         testEmployee = new Employee();
         testEmployee.setId(1L);
-        testEmployee.setName("John Doe");
+        testEmployee.setEmployeeName("John Doe");
         testEmployee.setRole("employee");
 
         workday1 = new Workday();

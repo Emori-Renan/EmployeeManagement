@@ -22,7 +22,7 @@ class EmployeeRepositoryTest {
     @BeforeEach
     public void setUp() {
         testEmployee = new Employee();
-        testEmployee.setName("John Doe");
+        testEmployee.setEmployeeName("John Doe");
         testEmployee.setRole("employee");
         employeeRepository.save(testEmployee);
     }
@@ -30,12 +30,12 @@ class EmployeeRepositoryTest {
     @Test
     void testFindById() {
         Employee foundEmployee = employeeRepository.findById(testEmployee.getId()).orElse(null);
-        assertEquals(testEmployee.getName(), foundEmployee.getName(), "O nome do funcionário não é igual.");
+        assertEquals(testEmployee.getEmployeeName(), foundEmployee.getEmployeeName(), "O nome do funcionário não é igual.");
     }
 
     @Test
     void testFindByName() {
         Employee foundEmployee = employeeRepository.findByName("John Doe").orElse(null);
-        assertEquals(testEmployee.getName(), foundEmployee.getName(), "Funcionário não encontrado pelo nome.");
+        assertEquals(testEmployee.getEmployeeName(), foundEmployee.getEmployeeName(), "Funcionário não encontrado pelo nome.");
     }
 }
