@@ -21,8 +21,6 @@ public class Employee {
     private String role;
 
     // Getters and Setters
-
-
     public Long getId() {
         return id;
     }
@@ -31,11 +29,11 @@ public class Employee {
         this.id = id;
     }
 
-    public String getName() {
+    public String getEmployeeName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setEmployeeName(String name) {
         this.name = name;
     }
 
