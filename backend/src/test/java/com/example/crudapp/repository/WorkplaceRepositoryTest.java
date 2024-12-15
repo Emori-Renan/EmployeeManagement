@@ -22,20 +22,20 @@ class WorkplaceRepositoryTest {
      @BeforeEach
     public void setUp() {
         testWorkplace = new Workplace();
-        testWorkplace.setName("Office A");
-        testWorkplace.setDailySalary(20000.0);
+        testWorkplace.setWorkplaceName("Office A");
+        testWorkplace.setDailySalary(20000);
         workplaceRepository.save(testWorkplace);
     }
 
     @Test
     void testFindById() {
         Workplace foundWorkplace = workplaceRepository.findById(testWorkplace.getId()).orElse(null);
-        assertEquals(testWorkplace.getName(), foundWorkplace.getName(), "O nome do local de trabalho não é igual.");
+        assertEquals(testWorkplace.getWorkplaceName(), foundWorkplace.getWorkplaceName(), "O nome do local de trabalho não é igual.");
     }
 
     @Test
     void testFindByName() {
         Workplace foundWorkplace = workplaceRepository.findByName("Office A").orElse(null);
-        assertEquals(testWorkplace.getName(), foundWorkplace.getName(), "Local de trabalho não encontrado pelo nome.");
+        assertEquals(testWorkplace.getWorkplaceName(), foundWorkplace.getWorkplaceName(), "Local de trabalho não encontrado pelo nome.");
     }
 }

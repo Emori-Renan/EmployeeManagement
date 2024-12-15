@@ -56,7 +56,7 @@ class WorkdayServiceTest {
         workday1.setTransportCost(50.0);
         workday1.setEmployee(testEmployee);
         workday1.setWorkplace(new Workplace());
-        workday1.getWorkplace().setName("Office A");
+        workday1.getWorkplace().setWorkplaceName("Office A");
 
         workday2 = new Workday();
         workday2.setDate(LocalDate.of(2024, 11, 2));
@@ -65,7 +65,7 @@ class WorkdayServiceTest {
         workday2.setTransportCost(50.0);
         workday2.setEmployee(testEmployee);
         workday2.setWorkplace(new Workplace());
-        workday2.getWorkplace().setName("Office B");
+        workday2.getWorkplace().setWorkplaceName("Office B");
     }
 
     @Test

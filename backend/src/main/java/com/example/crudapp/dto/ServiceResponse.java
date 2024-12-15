@@ -1,14 +1,12 @@
 package com.example.crudapp.dto;
 
-import com.example.crudapp.model.Employee;
-
 public class ServiceResponse {
 
     private boolean success;
     private String message;
-    private Employee data;
+    private Object data;
 
-    public ServiceResponse(boolean success, String message, Employee data) {
+    public ServiceResponse(boolean success, String message, Object data) {
         this.success = success;
         this.message = message;
         this.data = data;
@@ -19,7 +17,7 @@ public class ServiceResponse {
     }
 
      // Factory methods for success and error responses
-     public static ServiceResponse success(String message, Employee data) {
+     public static ServiceResponse success(String message, Object data) {
         return new ServiceResponse(true, message, data);
     }
 

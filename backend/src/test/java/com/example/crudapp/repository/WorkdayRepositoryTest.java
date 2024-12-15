@@ -41,7 +41,7 @@ class WorkdayRepositoryTest {
         employeeRepository.save(testEmployee);
 
         testWorkplace = new Workplace();
-        testWorkplace.setName("Office A");
+        testWorkplace.setWorkplaceName("Office A");
         workplaceRepository.save(testWorkplace);
     }
 

@@ -30,11 +30,11 @@ public class Workplace {
         this.id = id;
     }
 
-    public String getName() {
+    public String getWorkplaceName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setWorkplaceName(String name) {
         this.name = name;
     }
 
@@ -42,7 +42,7 @@ public class Workplace {
         return dailySalary;
     }
 
-    public void setDailySalary(Double dailySalary) {
+    public void setDailySalary(int dailySalary) {
         this.dailySalary = dailySalary;
     }
 }

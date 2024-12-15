@@ -30,7 +30,7 @@ public class WorkdayService {
         List<WorkdayDTO> workdayDTOs = workdays.stream()
                 .map(workday -> new WorkdayDTO(
                         workday.getDate(),
-                        workday.getWorkplace().getName(),
+                        workday.getWorkplace().getWorkplaceName(),
                         workday.getHoursWorked(),
                         workday.getOvertimeHours(),
                         workday.getTransportCost()))

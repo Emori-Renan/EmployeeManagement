@@ -87,7 +87,7 @@ class EmployeeServiceTest {
         assertEquals("Employee registered successfully", response.getMessage());
         assertNotNull(response.getData());
         assertEquals("John", ((Employee) response.getData()).getEmployeeName());
-        assertEquals("EMPLOYEE", ((Employee) response.getData()).getRole());
+        assertEquals("employee", ((Employee) response.getData()).getRole());
 
         verify(employeeRepository, times(1)).save(any(Employee.class));
     }

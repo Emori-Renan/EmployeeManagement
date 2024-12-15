@@ -1,11 +1,9 @@
 package com.example.crudapp.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 public class EmployeeRegistrationDTO {
-    @NotBlank(message = "Username is mandatory")
-    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
+    @NotBlank(message = "Name is mandatory")
     private String employeeName;
 
     @NotBlank(message = "Role is mandatory")
