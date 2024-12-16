@@ -30,10 +30,10 @@ public class Workday {
     private LocalDate date;
 
     @Column(name = "hours_worked")
-    private int hoursWorked;
+    private double hoursWorked;
 
     @Column(name = "overtime_hours")
-    private int overtimeHours;
+    private double overtimeHours;
 
     @Column(name = "transport_cost")
     private double transportCost;
@@ -72,19 +72,19 @@ public class Workday {
         this.date = date;
     }
 
-    public int getHoursWorked() {
+    public double getHoursWorked() {
         return hoursWorked;
     }
 
-    public void setHoursWorked(int hoursWorked) {
+    public void setHoursWorked(double hoursWorked) {
         this.hoursWorked = hoursWorked;
     }
 
-    public int getOvertimeHours() {
+    public double getOvertimeHours() {
         return overtimeHours;
     }
 
-    public void setOvertimeHours(int overtimeHours) {
+    public void setOvertimeHours(double overtimeHours) {
         this.overtimeHours = overtimeHours;
     }
 

@@ -1,8 +1,13 @@
 package com.example.crudapp.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
@@ -10,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -21,10 +27,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.crudapp.dto.ServiceResponse;
+import com.example.crudapp.dto.WorkdayDTO;
 import com.example.crudapp.model.Employee;
 import com.example.crudapp.model.Workday;
 import com.example.crudapp.model.Workplace;
+import com.example.crudapp.repository.EmployeeRepository;
 import com.example.crudapp.repository.WorkdayRepository;
+import com.example.crudapp.repository.WorkplaceRepository;
 
 @ExtendWith(MockitoExtension.class)
 class WorkdayServiceTest {
@@ -35,14 +45,22 @@ class WorkdayServiceTest {
     @Mock
     private WorkdayRepository workdayRepository;
 
+    @Mock
+    private EmployeeRepository employeeRepository;
+
+    @Mock
+    private WorkplaceRepository workplaceRepository;
+
     private Employee testEmployee;
     private Workday workday1;
     private Workday workday2;
 
+    private WorkdayDTO validDTO;
+    private WorkdayDTO existingWorkdayDTO;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this); 
+        MockitoAnnotations.openMocks(this);
 
         testEmployee = new Employee();
         testEmployee.setId(1L);
@@ -66,7 +84,98 @@ class WorkdayServiceTest {
         workday2.setEmployee(testEmployee);
         workday2.setWorkplace(new Workplace());
         workday2.getWorkplace().setWorkplaceName("Office B");
+
+        validDTO = new WorkdayDTO();
+        validDTO.setEmployeeId(1L);
+        validDTO.setWorkplaceId(1L);
+        validDTO.setDate(LocalDate.now());
+        validDTO.setHoursWorked(8);
+        validDTO.setOvertimeHours(2);
+        validDTO.setTransportCost(15.50);
+
+        existingWorkdayDTO = new WorkdayDTO();
+        existingWorkdayDTO.setEmployeeId(1L);
+        existingWorkdayDTO.setWorkplaceId(1L);
+        existingWorkdayDTO.setDate(LocalDate.now());
     }
+
+    @Test
+    void registerWorkday_shouldReturnError_whenWorkdayAlreadyExists() {
+        // Arrange
+        // Act
+        ServiceResponse response = workdayService.registerWorkday(validDTO);
+
+        // Assert
+        assertFalse(response.isSuccess());
+        assertEquals("Workday already exists for this employee at this workplace on this date.", response.getMessage());
+
+        verify(workdayRepository, times(1)).findByEmployeeIdAndWorkplaceIdAndDate(1L, 1L, validDTO.getDate());
+    }
+
+    @Test
+    void registerWorkday_shouldReturnError_whenFieldsAreInvalid() {
+        // Arrange
+        WorkdayDTO invalidDTO = new WorkdayDTO();
+        invalidDTO.setEmployeeId(null); // Missing employee ID
+        invalidDTO.setWorkplaceId(1L);
+        invalidDTO.setDate(LocalDate.now());
+        invalidDTO.setHoursWorked(8);
+        invalidDTO.setOvertimeHours(2);
+        invalidDTO.setTransportCost(50.0);
+
+        // Act
+        ServiceResponse response = workdayService.registerWorkday(invalidDTO);
+
+        // Assert
+        assertFalse(response.isSuccess());
+        assertEquals("An error occurred while registering the employee: Employee not found", response.getMessage());
+    }
+
+    @Test
+    void registerWorkday_shouldRegisterWorkdaySuccessfully() {
+        // Arrange
+        Employee mockEmployee = new Employee();
+        mockEmployee.setId(1L);
+
+        Workplace mockWorkplace = new Workplace();
+        mockWorkplace.setId(1L);
+
+        Workday savedWorkday = new Workday();
+        savedWorkday.setId(1L);
+        savedWorkday.setEmployee(mockEmployee);
+        savedWorkday.setWorkplace(mockWorkplace);
+        savedWorkday.setDate(validDTO.getDate());
+        savedWorkday.setHoursWorked(validDTO.getHoursWorked());
+        savedWorkday.setOvertimeHours(validDTO.getOvertimeHours());
+        savedWorkday.setTransportCost(validDTO.getTransportCost());
+
+        when(employeeRepository.findById(1L)).thenReturn(Optional.of(mockEmployee));
+        when(workplaceRepository.findById(1L)).thenReturn(Optional.of(mockWorkplace));
+        when(workdayRepository.findByEmployeeIdAndWorkplaceIdAndDate(1L, 1L, validDTO.getDate()))
+                .thenReturn(Optional.empty());
+        when(workdayRepository.save(any(Workday.class))).thenReturn(savedWorkday);
+
+        // Act
+        ServiceResponse response = workdayService.registerWorkday(validDTO);
+
+        // Assert
+        assertTrue(response.isSuccess());
+        assertEquals("Workday registered successfully", response.getMessage());
+        assertNotNull(response.getData());
+        Workday result = (Workday) response.getData();
+        assertEquals(1L, result.getEmployee().getId());
+        assertEquals(1L, result.getWorkplace().getId());
+        assertEquals(validDTO.getDate(), result.getDate());
+        assertEquals(validDTO.getHoursWorked(), result.getHoursWorked());
+        assertEquals(validDTO.getOvertimeHours(), result.getOvertimeHours());
+        assertEquals(validDTO.getTransportCost(), result.getTransportCost());
+
+        verify(employeeRepository, times(1)).findById(1L);
+        verify(workplaceRepository, times(1)).findById(1L);
+        verify(workdayRepository, times(1)).findByEmployeeIdAndWorkplaceIdAndDate(1L, 1L, validDTO.getDate());
+        verify(workdayRepository, times(1)).save(any(Workday.class));
+    }
+
 
     @Test
     void testGenerateWorkdayExcelReport() throws IOException {
