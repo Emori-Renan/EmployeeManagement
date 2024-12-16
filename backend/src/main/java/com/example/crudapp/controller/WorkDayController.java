@@ -6,12 +6,17 @@ import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.crudapp.dto.ServiceResponse;
+import com.example.crudapp.dto.WorkdayDTO;
 import com.example.crudapp.model.Employee;
 import com.example.crudapp.service.WorkdayService;
 
@@ -19,6 +24,16 @@ import com.example.crudapp.service.WorkdayService;
 public class WorkDayController {
     @Autowired
     private WorkdayService workdayService;
+
+    @PostMapping("/workday/register")
+    public ResponseEntity<ServiceResponse> registerWorkday(@RequestBody WorkdayDTO workdayDTO){
+        ServiceResponse response = workdayService.registerWorkday(workdayDTO);
+        if (response.isSuccess()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
 
     @GetMapping("/workday-report/{employeeId}")
     public ResponseEntity<byte[]> downloadWorkdayReport(@PathVariable Long employeeId,
