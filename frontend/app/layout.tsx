@@ -1,5 +1,5 @@
 "use client";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import Drawer from "./components/Drawer";
 import "./globals.css";
@@ -23,14 +23,19 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
 const MainLayout = ({ children }: { children: ReactNode }) => {
   const dispatch = useDispatch();
   const { showToast } = useToast();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const closeDrawer = () => {
+    setIsDrawerOpen(false);
+  };
 
   useEffect(() => {
     // Only run this code on the client side
     const token = getToken();
-    if(token){
+    if (token) {
       if (isTokenValid(token)) {
         dispatch(setToken(token)); // Set token in Redux store
-      } 
+      }
     } else {
       // Token is invalid or expired
       localStorage.removeItem("token"); // Remove expired/invalid token
@@ -44,14 +49,15 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
       <body>
         <link rel="icon" href="/favicon.png" />
         <header className="navbar sticky top-0 z-50 p-0">
-          <Navbar />
+          <Navbar closeDrawer={closeDrawer} />
         </header>
 
         <main>
           <div className="drawer">
-            <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+            <input id="my-drawer" type="checkbox" className="drawer-toggle"
+              onChange={() => setIsDrawerOpen(!isDrawerOpen)} checked={isDrawerOpen}/>
             <div className="drawer-content flex">{children}</div>
-            <Drawer />
+            <Drawer closeDrawer={closeDrawer} />
           </div>
         </main>
 

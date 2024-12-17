@@ -10,7 +10,11 @@ import { delay } from "../utils/functions";
 import { RootState } from "../store/store";
 import { useToast } from "../context/ToastContext";
 
-const Navbar = () => {
+type NavbarProps = {
+  closeDrawer: () => void;
+};
+
+const Navbar = ({ closeDrawer }: NavbarProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false)
@@ -20,6 +24,7 @@ const Navbar = () => {
   const { showToast } = useToast();
   
   const logout = async () => {
+    closeDrawer()
     clearToken();
     setIsLoading(true)
     await delay(2000);
@@ -50,14 +55,14 @@ const Navbar = () => {
         </label>
       </div>
       <div className="flex-1 pl-3">
-        <Link href="/" className="btn btn-ghost text-xl">My Application</Link>
+        <Link href="/" className="btn btn-ghost text-xl" onClick={closeDrawer}>My Application</Link>
       </div>
       {!isAuthenticated ? (<><div className="flex-none">
-        <Link href="/register" className="btn btn-ghost text-m">Sign up</Link>
+        <Link href="/register" className="btn btn-ghost text-m" onClick={closeDrawer}>Sign up</Link>
       </div><div className="flex-none">
-          <Link href="/login" className="btn btn-ghost text-m">Sign in</Link>
+          <Link href="/login" className="btn btn-ghost text-m" onClick={closeDrawer}>Sign in</Link>
         </div></>) : (<div className="flex-none">
-        <button onClick={logout} className="btn btn-ghost text-m">Logout</button>
+        <button onClick={logout} className="btn btn-ghost text-m" >Logout</button>
       </div>)}
       <LoadingModal isLoading={isLoading} message="Loggin out..." />
       
