@@ -32,12 +32,12 @@ export default function LoginPage() {
         setPasswordError(false);
         setError(null);
 
-        if(username == ""){            
+        if (username == "") {
             setUsernameError(true);
             setError("Username is required!");
             return false;
         }
-        if(password == ""){
+        if (password == "") {
             setPasswordError(true);
             setError("A password is required!");
             return false;
@@ -47,10 +47,12 @@ export default function LoginPage() {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        if(!validateForm()){
+        if (!validateForm()) {
             return;
         }
         try {
+            const { searchParams } = new URL(window.location.href);
+            const redirectPath = searchParams.get("redirect") || "/";
             setIsLoading(true);
             const data = await login({ usernameOrEmail: username, password: password });
             if (data instanceof AuthError) {
@@ -61,7 +63,7 @@ export default function LoginPage() {
             dispatch(loginSuccess(token));
             saveToken(token)
             await delay(3000);
-            router.push('/');
+            router.push(redirectPath);
             showToast("User logged in successfully!", "success");
             return;
         } catch (err: any) {
