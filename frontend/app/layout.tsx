@@ -39,16 +39,17 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // Only run this code on the client side
     const token = getToken();
-    if (token) {
+    if (token != null) {
       if (isTokenValid(token)) {
         dispatch(setToken(token)); // Set token in Redux store
+      } else {
+        // Token is invalid or expired
+        
+        localStorage.removeItem("token"); // Remove expired/invalid token
+        dispatch(logout()); // Clear Redux store
+        showToast("Session expired. Log in again.", "info");
       }
-    } else {
-      // Token is invalid or expired
-      localStorage.removeItem("token"); // Remove expired/invalid token
-      dispatch(logout()); // Clear Redux store
-      showToast("Session expired. Log in again.", "info");
-    }
+    } 
   }, [dispatch]);
 
   return (

@@ -1,19 +1,30 @@
 "use client"
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import ErrorMessage from "../components/ErrorMessage";
 import withAuth from "../store/withAuth"
 import { useRouter } from "next/navigation";
 import LoadingModal from "../components/Loading";
 import { delay } from "../utils/functions";
 import { registerEmployee } from "../controller/EmployeeController";
+import { getUsernameFromToken } from "../utils/auth";
 
 const Employees = () => {
 
     const [username, setUsername] = useState("");
+    const [loginName, setLoginName] = useState("");
     const [usernameError, setUsernameError] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+
+
+    useEffect(() => {
+        const name = getUsernameFromToken();
+        if(name){
+            setLoginName(name);
+        }
+        
+    }, [])
 
     const validateForm = () => {
         setUsernameError(false);
@@ -23,30 +34,30 @@ const Employees = () => {
             setUsernameError(true);
             return false;
         }
+        return true;
     }
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-
+        
         if (!validateForm()) {
             return;
         }
-
+        
         try {
             setIsLoading(true);
             const response = await registerEmployee({
-                            name: username,
-                            role: "employee"
-                        });
-                        
-                        if (!response.success) {
-                            throw new Error(response.message);
-                        }
-                        await delay(4000);
-                        router.push("/");
-                        return;
-        } catch (err:any) {
-            
+                employeeName: username,
+                role: "employee",
+                username: loginName
+            });
+            if (!response.success) {
+                throw new Error(response.message);
+            }
+            await delay(4000);
+            return;
+        } catch (err: any) {
+
         } finally {
             setIsLoading(false);
         }
