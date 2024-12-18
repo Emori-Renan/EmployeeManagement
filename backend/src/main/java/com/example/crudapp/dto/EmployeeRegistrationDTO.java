@@ -3,6 +3,8 @@ package com.example.crudapp.dto;
 import jakarta.validation.constraints.NotBlank;
 
 public class EmployeeRegistrationDTO {
+    @NotBlank(message = "Username is mandatory")
+    private String username;
     @NotBlank(message = "Name is mandatory")
     private String employeeName;
 
@@ -25,4 +27,14 @@ public class EmployeeRegistrationDTO {
     public void setRole(String role) {
         this.role = role;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    
 }

@@ -35,41 +35,41 @@ public class WorkdayService {
     private WorkplaceRepository workplaceRepository;
 
     public ServiceResponse registerWorkday(WorkdayDTO workdayDTO) {
-         try {
-        // Check if a workday already exists for the same employee, workplace, and date
-        Optional<Workday> existingWorkday = workdayRepository.findByEmployeeIdAndWorkplaceIdAndDate(
-            workdayDTO.getEmployeeId(),
-            workdayDTO.getWorkplaceId(),
-            workdayDTO.getDate()
-        );
+        try {
+            // Check if a workday already exists for the same employee, workplace, and date
+            Optional<Workday> existingWorkday = workdayRepository.findByEmployeeIdAndWorkplaceIdAndDate(
+                    workdayDTO.getEmployeeId(),
+                    workdayDTO.getWorkplaceId(),
+                    workdayDTO.getDate());
 
-        if (existingWorkday.isPresent()) {
-            return new ServiceResponse(false, "Workday already exists for this employee at this workplace on this date.");
+            if (existingWorkday.isPresent()) {
+                return new ServiceResponse(false,
+                        "Workday already exists for this employee at this workplace on this date.");
+            }
+
+            // Retrieve Employee and Workplace
+            Employee employee = employeeRepository.findById(workdayDTO.getEmployeeId())
+                    .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
+            Workplace workplace = workplaceRepository.findById(workdayDTO.getWorkplaceId())
+                    .orElseThrow(() -> new IllegalArgumentException("Workplace not found"));
+
+            // Map DTO to Entity
+            Workday workday = new Workday();
+            workday.setEmployee(employee);
+            workday.setWorkplace(workplace);
+            workday.setDate(workdayDTO.getDate());
+            workday.setHoursWorked((int) workdayDTO.getHoursWorked());
+            workday.setOvertimeHours((int) workdayDTO.getOvertimeHours());
+            workday.setTransportCost(workdayDTO.getTransportCost());
+
+            // Save and return
+            Workday savedWorkday = workdayRepository.save(workday);
+
+            return ServiceResponse.success("Workday registered successfully", savedWorkday);
+
+        } catch (Exception e) {
+            return ServiceResponse.error("An error occurred while registering the workday: " + e.getMessage());
         }
-
-        // Retrieve Employee and Workplace
-        Employee employee = employeeRepository.findById(workdayDTO.getEmployeeId())
-            .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
-        Workplace workplace = workplaceRepository.findById(workdayDTO.getWorkplaceId())
-            .orElseThrow(() -> new IllegalArgumentException("Workplace not found"));
-
-        // Map DTO to Entity
-        Workday workday = new Workday();
-        workday.setEmployee(employee);
-        workday.setWorkplace(workplace);
-        workday.setDate(workdayDTO.getDate());
-        workday.setHoursWorked((int) workdayDTO.getHoursWorked());
-        workday.setOvertimeHours((int) workdayDTO.getOvertimeHours());
-        workday.setTransportCost(workdayDTO.getTransportCost());
-
-        // Save and return
-        Workday savedWorkday = workdayRepository.save(workday);
-
-        return ServiceResponse.success("Workday registered successfully", savedWorkday);
-
-    } catch (Exception e) {
-        return ServiceResponse.error("An error occurred while registering the workday: " + e.getMessage());
-    } 
 
     }
 

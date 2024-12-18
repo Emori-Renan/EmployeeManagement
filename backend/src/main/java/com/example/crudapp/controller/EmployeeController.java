@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 @RequestMapping("/employee")
 public class EmployeeController {
 
@@ -26,6 +26,7 @@ public class EmployeeController {
 
     @PostMapping("/register")
     public ResponseEntity<ServiceResponse> registerEmployee(@RequestBody EmployeeRegistrationDTO employee) {
+        System.out.println("aopa " + employee);
         ServiceResponse response = employeeService.registerEmployee(employee);
         if (response.isSuccess()) {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);

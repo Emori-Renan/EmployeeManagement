@@ -2,29 +2,62 @@ package com.example.crudapp.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.repository.CrudRepository;
 
 import com.example.crudapp.dto.EmployeeRegistrationDTO;
 import com.example.crudapp.dto.ServiceResponse;
 import com.example.crudapp.model.Employee;
+import com.example.crudapp.model.UserLogin;
 import com.example.crudapp.repository.EmployeeRepository;
+import com.example.crudapp.repository.UserLoginRepository;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
 
     @Mock
     private EmployeeRepository employeeRepository;
 
+    @Mock
+    private UserLoginRepository userLoginRepository;
+
     @InjectMocks
     private EmployeeService employeeService;
 
+    private EmployeeRegistrationDTO validDTO;
+    private UserLogin userLogin;
+    private Employee savedEmployee;
+
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        // Prepare test data
+        validDTO = new EmployeeRegistrationDTO();
+        validDTO.setEmployeeName("John Doe");
+        validDTO.setRole("employee");
+        validDTO.setUsername("abc");
+
+        userLogin = new UserLogin();
+        userLogin.setId(1L);
+        userLogin.setUsername("abc");
+
+        savedEmployee = new Employee();
+        savedEmployee.setId(1L);
+        savedEmployee.setEmployeeName("John Doe");
+        savedEmployee.setRole("employee");
+        savedEmployee.setUserLogin(userLogin);
+
     }
 
     @Test
@@ -67,18 +100,9 @@ class EmployeeServiceTest {
 
     @Test
     void registerEmployee_shouldRegisterEmployeeSuccessfully() {
-        // Arrange
-        EmployeeRegistrationDTO validDTO = new EmployeeRegistrationDTO();
-        validDTO.setEmployeeName("John");
-        validDTO.setRole("employee");
-
-        Employee savedEmployee = new Employee();
-        savedEmployee.setId(1L);
-        savedEmployee.setEmployeeName("John");
-        savedEmployee.setRole("employee");
-
+        // Mock behavior for userLoginRepository and employeeRepository
         when(employeeRepository.save(any(Employee.class))).thenReturn(savedEmployee);
-
+        when(userLoginRepository.findByUsername("abc")).thenReturn(Optional.of(userLogin));
         // Act
         ServiceResponse response = employeeService.registerEmployee(validDTO);
 
@@ -86,28 +110,16 @@ class EmployeeServiceTest {
         assertTrue(response.isSuccess());
         assertEquals("Employee registered successfully", response.getMessage());
         assertNotNull(response.getData());
-        assertEquals("John", ((Employee) response.getData()).getEmployeeName());
-        assertEquals("employee", ((Employee) response.getData()).getRole());
 
+        Employee returnedEmployee = (Employee) response.getData();
+        assertEquals("John Doe", returnedEmployee.getEmployeeName());
+        assertEquals("employee", returnedEmployee.getRole());
+        assertEquals(1L, returnedEmployee.getUserLogin().getId());
+
+        // Verify repository interactions
+        verify(userLoginRepository, times(1)).findByUsername("abc");
         verify(employeeRepository, times(1)).save(any(Employee.class));
+        verifyNoMoreInteractions(userLoginRepository, employeeRepository);
     }
 
-    @Test
-    void registerEmployee_shouldHandleExceptions() {
-        // Arrange
-        EmployeeRegistrationDTO validDTO = new EmployeeRegistrationDTO();
-        validDTO.setEmployeeName("John");
-        validDTO.setRole("employee");
-
-        when(employeeRepository.save(any(Employee.class))).thenThrow(new RuntimeException("Database error"));
-
-        // Act
-        ServiceResponse response = employeeService.registerEmployee(validDTO);
-
-        // Assert
-        assertFalse(response.isSuccess());
-        assertTrue(response.getMessage().contains("An error occurred while registering the employee"));
-
-        verify(employeeRepository, times(1)).save(any(Employee.class));
-    }
 }

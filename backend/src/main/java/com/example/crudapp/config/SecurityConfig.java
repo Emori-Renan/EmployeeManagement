@@ -33,7 +33,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/register", "/auth/login").permitAll() // Endpoints públicos
                         .requestMatchers("/admin/**").hasRole("ADMIN") // Endpoints restritos ao ADMIN
-                        .requestMatchers("/employee/**").hasRole("EMPLOYEE") // Endpoints restritos ao EMPLOYEE
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // Filtro JWT
                 .httpBasic(withDefaults());

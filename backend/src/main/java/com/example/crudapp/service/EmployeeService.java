@@ -1,19 +1,25 @@
 package com.example.crudapp.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.crudapp.dto.EmployeeRegistrationDTO;
 import com.example.crudapp.dto.ServiceResponse;
 import com.example.crudapp.model.Employee;
+import com.example.crudapp.model.UserLogin;
 import com.example.crudapp.repository.EmployeeRepository;
+import com.example.crudapp.repository.UserLoginRepository;
 
 @Service
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
+    private final UserLoginRepository userLoginRepository;
 
-    public EmployeeService(EmployeeRepository employeeRepository) {
+    public EmployeeService(UserLoginRepository userLoginRepository, EmployeeRepository employeeRepository) {
+        this.userLoginRepository = userLoginRepository;
         this.employeeRepository = employeeRepository;
     }
+
 
     public ServiceResponse registerEmployee(EmployeeRegistrationDTO employeeDTO) {
         if (employeeDTO.getRole().equals("") ||
@@ -25,11 +31,16 @@ public class EmployeeService {
             return ServiceResponse.error("Invalid role. Role must be 'admin' or 'employee'.");
         }
 
-    try {
+        
+        try {
+        UserLogin userLogin = userLoginRepository.findByUsername(employeeDTO.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found with username: " + employeeDTO.getEmployeeName()));
+
             // Map DTO to Entity
             Employee employee = new Employee();
             employee.setEmployeeName(employeeDTO.getEmployeeName());
-            employee.setRole(employeeDTO.getRole().toUpperCase());
+            employee.setRole(employeeDTO.getRole());
+            employee.setUserLogin(userLogin);
 
             Employee savedEmployee = employeeRepository.save(employee);
 

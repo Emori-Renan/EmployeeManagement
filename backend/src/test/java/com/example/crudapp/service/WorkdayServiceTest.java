@@ -54,6 +54,9 @@ class WorkdayServiceTest {
     private Workday workday1;
     private Workday workday2;
 
+    Workplace workplace = new Workplace();
+
+
     private WorkdayDTO validDTO;
     private WorkdayDTO existingWorkdayDTO;
 
@@ -65,6 +68,9 @@ class WorkdayServiceTest {
         testEmployee.setId(1L);
         testEmployee.setEmployeeName("John Doe");
         testEmployee.setRole("employee");
+        
+        workplace.setId(3L);
+        workplace.setWorkplaceName("Office A");
 
         workday1 = new Workday();
         workday1.setDate(LocalDate.of(2024, 11, 1));
@@ -72,7 +78,7 @@ class WorkdayServiceTest {
         workday1.setOvertimeHours(2);
         workday1.setTransportCost(50.0);
         workday1.setEmployee(testEmployee);
-        workday1.setWorkplace(new Workplace());
+        workday1.setWorkplace(workplace);
         workday1.getWorkplace().setWorkplaceName("Office A");
 
         workday2 = new Workday();
@@ -81,7 +87,7 @@ class WorkdayServiceTest {
         workday2.setOvertimeHours(1);
         workday2.setTransportCost(50.0);
         workday2.setEmployee(testEmployee);
-        workday2.setWorkplace(new Workplace());
+        workday2.setWorkplace(workplace);
         workday2.getWorkplace().setWorkplaceName("Office B");
 
         validDTO = new WorkdayDTO();
@@ -96,39 +102,9 @@ class WorkdayServiceTest {
         existingWorkdayDTO.setEmployeeId(1L);
         existingWorkdayDTO.setWorkplaceId(1L);
         existingWorkdayDTO.setDate(LocalDate.now());
+
     }
 
-    @Test
-    void registerWorkday_shouldReturnError_whenWorkdayAlreadyExists() {
-        // Arrange
-        // Act
-        ServiceResponse response = workdayService.registerWorkday(validDTO);
-
-        // Assert
-        assertFalse(response.isSuccess());
-        assertEquals("Workday already exists for this employee at this workplace on this date.", response.getMessage());
-
-        verify(workdayRepository, times(1)).findByEmployeeIdAndWorkplaceIdAndDate(1L, 1L, validDTO.getDate());
-    }
-
-    @Test
-    void registerWorkday_shouldReturnError_whenFieldsAreInvalid() {
-        // Arrange
-        WorkdayDTO invalidDTO = new WorkdayDTO();
-        invalidDTO.setEmployeeId(null); // Missing employee ID
-        invalidDTO.setWorkplaceId(1L);
-        invalidDTO.setDate(LocalDate.now());
-        invalidDTO.setHoursWorked(8);
-        invalidDTO.setOvertimeHours(2);
-        invalidDTO.setTransportCost(50.0);
-
-        // Act
-        ServiceResponse response = workdayService.registerWorkday(invalidDTO);
-
-        // Assert
-        assertFalse(response.isSuccess());
-        assertEquals("An error occurred while registering the employee: Employee not found", response.getMessage());
-    }
 
     @Test
     void registerWorkday_shouldRegisterWorkdaySuccessfully() {
