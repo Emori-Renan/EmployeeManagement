@@ -7,8 +7,8 @@ import { Provider, useDispatch } from "react-redux";
 import store from "./store/store";
 import { ToastProvider, useToast } from "./context/ToastContext";
 import ToastContainer from "./components/ToastContainer";
-import { logout, setToken } from "./store/authSlice";
-import { getToken, isTokenValid } from "./utils/auth";
+import { logout, setToken, setUsername } from "./store/authSlice";
+import { getToken, getUsernameFromToken, isTokenValid } from "./utils/auth";
 
 const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -28,6 +28,13 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
   const closeDrawer = () => {
     setIsDrawerOpen(false);
   };
+
+  useEffect(() => {
+    const username = getUsernameFromToken();
+    if (username) {
+      dispatch(setUsername(username)); // Store username in Redux
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     // Only run this code on the client side

@@ -1,20 +1,23 @@
 "use client"
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { getToken, isTokenValid } from '../utils/auth';
+import { loginSuccess } from './authSlice';
 
 const withAuth = (WrappedComponent) => {
   const EnhancedComponent = (props) => {
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
     const router = useRouter();
+    const dispatch = useDispatch();
 
     useEffect(() => {
-      console.log("saporra ta certa? deve estar false: ",isAuthenticated);
-      console.log("olha o otken ae: ", localStorage.getItem('token'));
-      
-      
-      if (!isAuthenticated) {
+      const token = getToken();
+      if (!token || (token && !isTokenValid(token))) {
         router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`); // Redirect to login if not authenticated
+      } 
+      if(token && !isAuthenticated){
+        dispatch(loginSuccess(token));
       }
     }, [isAuthenticated, router]);
 

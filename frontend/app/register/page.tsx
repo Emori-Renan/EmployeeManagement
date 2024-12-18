@@ -26,7 +26,6 @@ export default function RegisterPage() {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-
         if(!validateForm()){
             return;
         }

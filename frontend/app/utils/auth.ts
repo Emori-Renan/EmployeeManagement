@@ -1,6 +1,7 @@
-import { jwtDecode, JwtPayload } from "jwt-decode";
+import { jwtDecode, JwtPayload  } from "jwt-decode";
 
 // /utils/auth.ts
+
 export const saveToken = (token: string) => {
     localStorage.setItem('token', token);
 };
@@ -25,3 +26,18 @@ export function isTokenValid(token: string): boolean {
       return false; // Token is invalid or couldn't be decoded
     }
   }
+
+ export const getUsernameFromToken = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return null; 
+    }
+    try {
+      const decodedToken = jwtDecode<JwtPayload>(token); 
+      
+      return decodedToken.sub ?? null; 
+    } catch (error) {
+      console.error('Invalid token:', error);
+      return null; 
+    }
+  };
