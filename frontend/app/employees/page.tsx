@@ -2,7 +2,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import ErrorMessage from "../components/ErrorMessage";
 import withAuth from "../store/withAuth"
-import { useRouter } from "next/navigation";
 import LoadingModal from "../components/Loading";
 import { delay } from "../utils/functions";
 import { registerEmployee } from "../controller/EmployeeController";
@@ -15,7 +14,6 @@ const Employees = () => {
     const [usernameError, setUsernameError] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const router = useRouter();
 
 
     useEffect(() => {
@@ -56,8 +54,8 @@ const Employees = () => {
             }
             await delay(4000);
             return;
-        } catch (err: any) {
-
+        } catch {
+            console.log("Error");
         } finally {
             setIsLoading(false);
         }

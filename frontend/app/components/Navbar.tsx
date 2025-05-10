@@ -38,7 +38,7 @@ const Navbar = ({ closeDrawer }: NavbarProps) => {
     <div className="navbar bg-orange-50 shadow-sm">
 
       <div className="flex-none">
-        <label htmlFor="my-drawer" className="btn drawer-button">
+        <label htmlFor="my-drawer" className="btn drawer-button" aria-label="Open drawer">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
