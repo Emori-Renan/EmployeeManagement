@@ -1,9 +1,5 @@
 To-do:
 
-Backend:
+Remake the employee logic
 
-Separate integration tests from unit tests
-
-Frontend:
-
-Implement drawer itens
+Admin not needed, too much work for now. refactor later if expand project
