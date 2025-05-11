@@ -61,7 +61,7 @@ export default function LoginPage() {
             // Handle successful login (e.g., redirect or store tokens)
             const token = data.token ?? ''
             dispatch(loginSuccess(token));
-            saveToken(token)
+            saveToken(token);
             await delay(3000);
             router.push(redirectPath);
             showToast("User logged in successfully!", "success");

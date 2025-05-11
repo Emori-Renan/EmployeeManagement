@@ -6,6 +6,10 @@ import { register } from "../controller/RegisterController";
 import { useRouter } from 'next/navigation'
 import LoadingModal from "../components/Loading";
 import { delay } from "../utils/functions";
+import { useDispatch } from "react-redux";
+import { saveToken } from "../utils/auth";
+import { loginSuccess } from "../store/authSlice";
+import { login } from "../controller/LoginController";
 
 export default function RegisterPage() {
 
@@ -21,6 +25,7 @@ export default function RegisterPage() {
 
     const [isLoading, setIsLoading] = useState(false)
 
+    const dispatch = useDispatch();
     const router = useRouter();
 
     const handleSubmit = async (e: FormEvent) => {
@@ -41,7 +46,18 @@ export default function RegisterPage() {
             if (!response.success) {
                 throw new Error(response.message);
             }
-            await delay(4000);
+
+            const data = await login({ usernameOrEmail: username, password: password });
+                if (data instanceof AuthError) {
+                    throw data;
+                }
+
+            const token = data.token ?? ''
+            dispatch(loginSuccess(token));
+            saveToken(token);
+            await delay(3000);
+
+            // await delay(4000);
             router.push("/");
             return;
 
