@@ -1,5 +1,7 @@
 package com.example.crudapp.controller;
 
+import java.security.Provider.Service;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -11,6 +13,9 @@ import com.example.crudapp.dto.ServiceResponse;
 import com.example.crudapp.service.EmployeeService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -33,5 +38,16 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
+
+    @GetMapping("/list")
+    public ResponseEntity<ServiceResponse> getEmployees(@RequestParam String username) {
+        ServiceResponse response = employeeService.getEmployees(username);
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+    
     
 }

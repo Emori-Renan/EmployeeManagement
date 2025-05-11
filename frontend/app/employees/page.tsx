@@ -6,8 +6,10 @@ import LoadingModal from "../components/Loading";
 import { delay } from "../utils/functions";
 import { registerEmployee } from "../controller/EmployeeController";
 import { getUsernameFromToken } from "../utils/auth";
+import { useToast } from "../context/ToastContext";
 
 const Employees = () => {
+    const { showToast } = useToast();
 
     const [username, setUsername] = useState("");
     const [loginName, setLoginName] = useState("");
@@ -53,6 +55,7 @@ const Employees = () => {
                 throw new Error(response.message);
             }
             await delay(4000);
+            showToast("Employee registered succesfully!", "success");
             return;
         } catch {
             console.log("Error");
@@ -93,7 +96,7 @@ const Employees = () => {
                     </form>
                 </div>
             </div>
-            <LoadingModal isLoading={isLoading} message="Loading..." />
+            <LoadingModal isLoading={isLoading} message="Registering..." />
         </div>);
 }
 

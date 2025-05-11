@@ -20,7 +20,6 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-
     public ServiceResponse registerEmployee(EmployeeRegistrationDTO employeeDTO) {
         if (employeeDTO.getRole().equals("") ||
                 employeeDTO.getEmployeeName().equals("")) {
@@ -30,24 +29,30 @@ public class EmployeeService {
                 !employeeDTO.getRole().equalsIgnoreCase("employee")) {
             return ServiceResponse.error("Invalid role. Role must be 'admin' or 'employee'.");
         }
-
-        
         try {
         UserLogin userLogin = userLoginRepository.findByUsername(employeeDTO.getUsername())
                     .orElseThrow(() -> new RuntimeException("User not found with username: " + employeeDTO.getEmployeeName()));
-
             // Map DTO to Entity
             Employee employee = new Employee();
             employee.setEmployeeName(employeeDTO.getEmployeeName());
             employee.setRole(employeeDTO.getRole());
             employee.setUserLogin(userLogin);
-
             Employee savedEmployee = employeeRepository.save(employee);
-
             return ServiceResponse.success("Employee registered successfully", savedEmployee);
-
         } catch (Exception e) {
             return ServiceResponse.error("An error occurred while registering the employee: " + e.getMessage());
         }
     }
+
+    public ServiceResponse getEmployees(String username) {
+        try {
+            UserLogin userLogin = userLoginRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
+            return ServiceResponse.success("Employees retrieved successfully", employeeRepository.findByUserLogin(userLogin));
+        } catch (Exception e) {
+            return ServiceResponse.error("An error occurred while retrieving employees: " + e.getMessage());
+        }
+    }
+
+
 }

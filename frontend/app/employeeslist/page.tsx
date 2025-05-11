@@ -1,0 +1,88 @@
+"use client";
+import { useEffect, useState } from "react";
+import LoadingModal from "../components/Loading";
+import withAuth from "../store/withAuth";
+import { getEmployees } from "../controller/EmployeeController";
+import { getUsernameFromToken } from "../utils/auth";
+import { useToast } from "../context/ToastContext";
+import { useRouter } from 'next/navigation'
+
+interface Employee {
+    id: number;
+    employeeName: string;
+    role: string;
+}
+
+
+const EmployeeList = () => {
+    const router = useRouter();
+    const { showToast } = useToast();
+    const [employees, setEmployees] = useState<Employee[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [loginName, setLoginName] = useState("");
+
+    useEffect(() => {
+        const name = getUsernameFromToken();
+        if (name) {
+            setLoginName(name);
+            fetchEmployees(name);
+        }
+    }, []);
+
+    const fetchEmployees = async (username: string) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const response = await getEmployees(username);
+            if (!response.success) {
+                throw new Error(response.message);
+            }
+            setEmployees(response.data);
+        } catch (err: any) {
+            setError("Failed to load employees");
+            showToast("Failed to load employees", "error");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="hero bg-base-200 min-h-screen">
+            <div className="hero-content flex-col">
+                <h1 className="text-4xl font-bold mb-4">Your Employees</h1>
+
+                {error && <p className="text-red-500 mb-4">{error}</p>}
+
+                <div className="overflow-x-auto w-full max-w-md">
+                    <table className="table table-zebra">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {employees.map((emp) => (
+                                <tr key={emp.id}>
+                                    <td>{emp.employeeName}</td>
+                                    <td>{emp.role}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <button onClick={() => router.push("/employees")} className="btn btn-primary">Register employee</button>
+
+                {employees.length === 0 && !isLoading && (
+                    <p className="mt-4 text-gray-500">No employees registered yet.</p>
+                )}
+
+            </div>
+
+            <LoadingModal isLoading={isLoading} message="Loading employees..." />
+        </div>
+    );
+};
+
+export default withAuth(EmployeeList);

@@ -9,13 +9,13 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
     (config) => {
         const token = getToken(); // Get the token from storage
-        
         if (token && config.headers) { // Ensure headers exist
             config.headers['Authorization'] = `Bearer ${token}`; // Add token to headers
         }
         return config;
     },
     (error) => {
+        console.error('Request error:', error);
         return Promise.reject(error);   
     }
 );

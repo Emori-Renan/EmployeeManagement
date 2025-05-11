@@ -10,7 +10,7 @@ const Drawer = ({ closeDrawer }: DrawerProps) => {
             <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay" onClick={closeDrawer}></label>
             <ul className="menu bg-base-200 text-base-content min-h-full w-[20%] p-4">
                 {/* Sidebar content here */}
-                <Link href="/employees" onClick={closeDrawer}>Profile</Link>
+                <Link href="/employeeslist" onClick={closeDrawer}>Profile</Link>
                 <Link href="" onClick={closeDrawer}>Sidebar Item 2</Link>
             </ul>
         </div>
