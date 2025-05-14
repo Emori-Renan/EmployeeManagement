@@ -67,12 +67,17 @@ const EmployeeList = () => {
                                 <tr key={emp.id}>
                                     <td>{emp.employeeName}</td>
                                     <td>{emp.role}</td>
+                                    <td>
+                                        <button onClick={() => router.push(`/employee/${emp.id}`)} className="btn btn-primary">Manage employee</button>
+                                    </td>
                                 </tr>
+                                
                             ))}
                         </tbody>
                     </table>
                 </div>
-                <button onClick={() => router.push("/employees")} className="btn btn-primary">Register employee</button>
+                <button onClick={() => router.push("/employeesregister")} className="btn btn-primary">Register employee</button>
+                
 
                 {employees.length === 0 && !isLoading && (
                     <p className="mt-4 text-gray-500">No employees registered yet.</p>

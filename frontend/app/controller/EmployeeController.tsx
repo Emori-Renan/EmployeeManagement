@@ -50,3 +50,46 @@ export const getEmployees = async (username: string) => {
     }
   }
 }
+
+export const getEmployeeById = async (id: string) => {
+  try {
+    const response = await apiClient.get<{ success: boolean; data: Employee; message?: string }>(
+      `/employee/${id}`,
+      { withCredentials: true }
+    );
+    return { success: true, data: response.data.data };
+  } catch (error: any) {
+    if (error.response) {
+      const message = error.response.data?.message || "An error occurred. Please try again.";
+      return { success: false, message };
+    }
+    else if (error.request) {
+      return { success: false, message: "Network error, please check your connection." };
+    }
+    else {
+      return { success: false, message: "An unexpected error occurred." + error };
+    }
+  }
+}
+
+export const updateEmployee = async (id: string, payload: RegisterPayload) => {
+  try {
+    const response = await apiClient.put<{ success: boolean; message: string }>(
+      `/employee/${id}`,
+      payload,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      const message = error.response.data?.message || "An error occurred. Please try again.";
+      return { success: false, message };
+    }
+    else if (error.request) {
+      return { success: false, message: "Network error, please check your connection." };
+    }
+    else {
+      return { success: false, message: "An unexpected error occurred." + error };
+    }
+  }
+}
