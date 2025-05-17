@@ -3,6 +3,7 @@ package com.example.crudapp.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.crudapp.dto.EmployeeDTO;
 import com.example.crudapp.dto.EmployeeRegistrationDTO;
 import com.example.crudapp.dto.ServiceResponse;
 import com.example.crudapp.model.Employee;
@@ -54,5 +55,39 @@ public class EmployeeService {
         }
     }
 
+    public ServiceResponse getEmployeeById(Long id) {
+    try {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + id));
+
+        EmployeeDTO dto = new EmployeeDTO(
+                employee.getId(),
+                employee.getEmployeeName(),
+                employee.getRole()
+        );
+
+        return ServiceResponse.success("Employee retrieved successfully", dto);
+    } catch (Exception e) {
+        return ServiceResponse.error("An error occurred while retrieving the employee: " + e.getMessage());
+    }
+}
+
+
+    public ServiceResponse updateEmployee(Long id, EmployeeRegistrationDTO employeeDTO) {
+        try {
+            Employee employee = employeeRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + id));
+            if (employeeDTO.getEmployeeName() != null) {
+                employee.setEmployeeName(employeeDTO.getEmployeeName());
+            }
+            if (employeeDTO.getRole() != null) {
+                employee.setRole(employeeDTO.getRole());
+            }
+            Employee updatedEmployee = employeeRepository.save(employee);
+            return ServiceResponse.success("Employee updated successfully", updatedEmployee);
+        } catch (Exception e) {
+            return ServiceResponse.error("An error occurred while updating the employee: " + e.getMessage());
+        }
+    }
 
 }

@@ -14,7 +14,10 @@ import com.example.crudapp.service.EmployeeService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 
@@ -49,5 +52,24 @@ public class EmployeeController {
         }
     }
     
+    @GetMapping("/{id}")
+    public ResponseEntity<ServiceResponse> getEmployeeById(@PathVariable Long id) {
+        ServiceResponse response = employeeService.getEmployeeById(id);
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ServiceResponse> updateEmployee(@PathVariable Long id, @RequestBody EmployeeRegistrationDTO employee) {
+        ServiceResponse response = employeeService.updateEmployee(id, employee);
+        if (response.isSuccess()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
     
 }
