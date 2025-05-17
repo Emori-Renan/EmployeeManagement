@@ -2,12 +2,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
-export default function EmployeeDetailClient({ id }: { id: string }) {
+export default function EmployeeDetailClient() {
+  const { id } = useParams();
   const [employee, setEmployee] = useState<any>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!id || typeof id !== "string") return;
+
     const token = localStorage.getItem("token");
     if (!token) {
       setError("No token found");
@@ -20,11 +24,10 @@ export default function EmployeeDetailClient({ id }: { id: string }) {
       },
     })
       .then(async (res) => {
+        const data = await res.json();
         if (!res.ok) {
-          const data = await res.json();
           setError(data.message || "Error fetching employee");
         } else {
-          const data = await res.json();
           setEmployee(data.data);
         }
       })
