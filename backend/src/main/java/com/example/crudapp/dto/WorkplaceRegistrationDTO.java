@@ -1,15 +1,23 @@
 package com.example.crudapp.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 
 public class WorkplaceRegistrationDTO {
+
     @NotBlank(message = "Workplace Name is mandatory")
     private String workplaceName;
 
-    @NotBlank(message = "Name is mandatory")
-    private int dailySalary;
+    @Positive(message = "Hourly Wage must be a positive value")
+    private double hourlyWage;
 
-    //getters and setters
+    @Positive(message = "Overtime Multiplier must be a positive value")
+    private double overtimeMultiplier;
+
+    @NotBlank(message = "Employee ID is mandatory")
+    private Long employeeId;
+
+    // Getters and setters
 
     public String getWorkplaceName() {
         return workplaceName;
@@ -19,12 +27,27 @@ public class WorkplaceRegistrationDTO {
         this.workplaceName = workplaceName;
     }
 
-    public int getDailySalary() {
-        return dailySalary;
+    public double getHourlyWage() {
+        return hourlyWage;
     }
 
-    public void setDailySalary(int dailySalary) {
-        this.dailySalary = dailySalary;
+    public void setHourlyWage(double hourlyWage) {
+        this.hourlyWage = hourlyWage;
     }
 
+    public double getOvertimeMultiplier() {
+        return overtimeMultiplier;
+    }
+
+    public void setOvertimeMultiplier(double overtimeMultiplier) {
+        this.overtimeMultiplier = overtimeMultiplier;
+    }
+
+    public Long getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
+    }
 }

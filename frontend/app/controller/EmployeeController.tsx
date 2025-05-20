@@ -10,12 +10,13 @@ export const registerEmployee = async (payload: RegisterPayload) => {
   try {
     const response = await apiClient.post<{ success: boolean; message: string }>("/employee/register", payload, { withCredentials: true });
     return response.data;
-  } catch (error: any) {
-    if (error.response) {
-      const message = error.response.data?.message || "An error occurred. Please try again.";
+  } catch (error: unknown) {
+    if (typeof error === "object" && error !== null && "response" in error) {
+      const err = error as { response: { data?: { message?: string } } };
+      const message = err.response.data?.message || "An error occurred. Please try again.";
       return { success: false, message };
     }
-    else if (error.request) {
+    else if (typeof error === "object" && error !== null && "request" in error) {
       return { success: false, message: "Network error, please check your connection." };
     }
     else {

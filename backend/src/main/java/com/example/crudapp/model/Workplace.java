@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -14,13 +16,34 @@ public class Workplace {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "workplace_name", nullable = false)
+    private String workplaceName;
 
-    @Column(name = "daily_salary")
-    private double dailySalary;
+    @Column(name = "hourly_wage")
+    private double hourlyWage;
 
-    // Getters e Setters
+    @Column(name = "overtime_multiplier")
+    private double overtimeMultiplier;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    private Employee employee;
+
+    // Constructors (optional, but good practice)
+    public Workplace() {
+    }
+
+   public Workplace(String workplaceName, double hourlyWage, double overtimeMultiplier, Employee employee) {
+    this.workplaceName = workplaceName;
+    this.hourlyWage = hourlyWage;
+    this.overtimeMultiplier = overtimeMultiplier;
+    this.employee = employee;
+}
+
+
+
+
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -31,18 +54,30 @@ public class Workplace {
     }
 
     public String getWorkplaceName() {
-        return name;
+        return workplaceName;
     }
 
-    public void setWorkplaceName(String name) {
-        this.name = name;
+    public void setWorkplaceName(String workplaceName) {
+        this.workplaceName = workplaceName;
     }
 
-    public Double getDailySalary() {
-        return dailySalary;
+    public double getHourlyWage() {
+        return hourlyWage;
     }
 
-    public void setDailySalary(int dailySalary) {
-        this.dailySalary = dailySalary;
+    public void setHourlyWage(double hourlyWage) {
+        this.hourlyWage = hourlyWage;
+    }
+
+    public double getOvertimeMultiplier() {
+        return overtimeMultiplier;
+    }
+
+    public void setOvertimeMultiplier(double overtimeMultiplier) {
+        this.overtimeMultiplier = overtimeMultiplier;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 }
