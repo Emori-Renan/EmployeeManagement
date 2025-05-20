@@ -5,9 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.example.crudapp.model.Employee;
 import com.example.crudapp.model.Workplace;
 
 import jakarta.transaction.Transactional;
@@ -20,13 +22,22 @@ class WorkplaceRepositoryTest {
 
     private Workplace testWorkplace;
 
+    @InjectMocks
+    private Employee employee;
+
     @BeforeEach
-    public void setUp() {
+    void setUp() {
+        // Create a test employee
+        employee = new Employee();
+        employee.setId(1L); // Assuming you have an employee with ID 1
+        employee.setEmployeeName("John Doe");
+        employee.setRole("employee");
+
         testWorkplace = new Workplace();
         testWorkplace.setWorkplaceName("Office A");
         testWorkplace.setHourlyWage(30.0);
         testWorkplace.setOvertimeMultiplier(1.5);
-        testWorkplace.setEmployeeId(1L); // Assuming you have an employee with ID 1
+        testWorkplace.setEmployee(employee); // Assuming you have an employee with ID 1
         workplaceRepository.save(testWorkplace);
     }
 

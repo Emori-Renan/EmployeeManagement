@@ -25,7 +25,7 @@ class SalaryRepositoryTest {
     private Employee testEmployee;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         testEmployee = new Employee();
         testEmployee.setEmployeeName("John Doe");
         testEmployee.setRole("employee");

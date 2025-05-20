@@ -12,6 +12,6 @@ import com.example.crudapp.model.Workplace;
 public interface WorkplaceRepository extends JpaRepository<Workplace, Long> {
     
     Optional<Workplace> findByWorkplaceName(String name);
-
+    List<Workplace> findByEmployeeId(Long employeeId);
     List<Workplace> findAllByEmployeeId(Long employeeId);
 }
