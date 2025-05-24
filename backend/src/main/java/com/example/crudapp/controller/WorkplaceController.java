@@ -34,7 +34,7 @@ public class WorkplaceController {
         }
     }
 
-    @GetMapping("/employee/{employeeId}")
+    @GetMapping("/{employeeId}")
     public ResponseEntity<ServiceResponse> getAllWorkplacesByEmployeeId(@org.springframework.web.bind.annotation.PathVariable Long employeeId) {
         ServiceResponse response = service.getAllWorkplacesByEmployeeId(employeeId);
         if (response.isSuccess()) {

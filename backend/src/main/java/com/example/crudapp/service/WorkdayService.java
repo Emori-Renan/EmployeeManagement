@@ -11,7 +11,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.crudapp.dto.ServiceResponse;
@@ -25,14 +24,17 @@ import com.example.crudapp.repository.WorkplaceRepository;
 
 @Service
 public class WorkdayService {
-    @Autowired
-    private WorkdayRepository workdayRepository;
+    private final WorkdayRepository workdayRepository;
+    private final EmployeeRepository employeeRepository;
+    private final WorkplaceRepository workplaceRepository;
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
-
-    @Autowired
-    private WorkplaceRepository workplaceRepository;
+    public WorkdayService(WorkdayRepository workdayRepository,
+                          EmployeeRepository employeeRepository,
+                          WorkplaceRepository workplaceRepository) {
+        this.workdayRepository = workdayRepository;
+        this.employeeRepository = employeeRepository;
+        this.workplaceRepository = workplaceRepository;
+    }
 
     public ServiceResponse registerWorkday(WorkdayDTO workdayDTO) {
         try {
@@ -115,4 +117,21 @@ public class WorkdayService {
         workbook.close();
         return out;
     }
+
+    public ServiceResponse getWorkdaysFiltered(Long employeeId, LocalDate startDate, LocalDate endDate, Long workplaceId) {
+        List<Workday> workdays;
+
+        if (startDate != null && endDate != null && workplaceId != null) {
+            workdays = workdayRepository.findByEmployeeIdAndDateBetweenAndWorkplaceId(employeeId, startDate, endDate, workplaceId);
+        } else if (startDate != null && endDate != null) {
+            workdays = workdayRepository.findByEmployeeIdAndDateBetween(employeeId, startDate, endDate);
+        } else if (workplaceId != null) {
+            workdays = workdayRepository.findByEmployeeIdAndWorkplaceId(employeeId, workplaceId);
+        } else {
+            workdays = workdayRepository.findByEmployeeId(employeeId);
+        }
+
+        return new ServiceResponse(true, "Workdays retrieved successfully", workdays);
+}
+
 }

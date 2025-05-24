@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +22,11 @@ import com.example.crudapp.service.WorkdayService;
 
 @RestController
 public class WorkDayController {
-    @Autowired
-    private WorkdayService workdayService;
+    private final WorkdayService workdayService;
+
+    public WorkDayController(WorkdayService workdayService) {
+        this.workdayService = workdayService;
+    }
 
     @PostMapping("/workday/register")
     public ResponseEntity<ServiceResponse> registerWorkday(@RequestBody WorkdayDTO workdayDTO){
@@ -57,4 +60,14 @@ public class WorkDayController {
                 .body(report.toByteArray());
     }
 
+   @GetMapping("/workdays/{employeeId}/filtered")
+    public ResponseEntity<ServiceResponse> getWorkdaysFiltered(
+            @PathVariable Long employeeId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) Long workplaceId) {
+
+        ServiceResponse response = workdayService.getWorkdaysFiltered(employeeId, startDate, endDate, workplaceId);
+        return ResponseEntity.ok(response);
+    }
 }
