@@ -71,10 +71,10 @@ void testAuthenticate_ValidUsername() {
     // Assertions
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertNotNull(response.getBody());
-    assertEquals("mockToken", response.getBody().getToken());
-    assertEquals("Login successful", response.getBody().getMessage());
+    AuthenticationResponse responseBody = response.getBody();
+    assertNotNull(responseBody, "AuthenticationResponse body should not be null");
+    assertEquals("mockToken", responseBody.getToken());
+    assertEquals("Login successful", responseBody.getMessage());
 }
 
-
-    // Other unit tests (e.g., invalid user, invalid password, etc.)
 }

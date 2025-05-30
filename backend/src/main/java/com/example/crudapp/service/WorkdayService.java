@@ -7,10 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import com.example.crudapp.dto.ServiceResponse;
@@ -81,8 +77,6 @@ public class WorkdayService {
             LocalDate startDate,
             LocalDate endDate,
             String workplaceFilter) throws IOException {
-
-
         List<Workday> records = workdayRepository.findByEmployeeIdAndDateBetween(employee.getId(), startDate, endDate);
         List<Workday> filteredRecords;
         if (workplaceFilter != null && !workplaceFilter.isEmpty()) {

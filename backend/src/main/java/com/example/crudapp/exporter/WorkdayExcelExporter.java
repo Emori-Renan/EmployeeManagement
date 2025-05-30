@@ -1,7 +1,6 @@
 package com.example.crudapp.exporter;
 
 import com.example.crudapp.model.Workday;
-import com.example.crudapp.model.Workplace; // Ensure Workplace is imported if Workday uses it
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Row;
@@ -77,13 +76,12 @@ public class WorkdayExcelExporter {
         Cell cell = row.createCell(columnCount); // Create the cell at the specified column
 
         // Set cell value based on its type
-        if (value instanceof LocalDate) {
-            // Format LocalDate to a string for display in Excel
-            cell.setCellValue(((LocalDate) value).format(DateTimeFormatter.ISO_LOCAL_DATE));
-        } else if (value instanceof Integer) {
-            cell.setCellValue((Integer) value);
-        } else if (value instanceof Double) {
-            cell.setCellValue((Double) value);
+        if (value instanceof LocalDate localDate) {
+            cell.setCellValue(localDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        } else if (value instanceof Integer integer) {
+            cell.setCellValue(integer);
+        } else if (value instanceof Double doubleValue) {
+            cell.setCellValue(doubleValue);
         } else if (value != null) {
             // For other types, convert to String. Handles potential null values gracefully.
             cell.setCellValue(value.toString());
@@ -97,49 +95,30 @@ public class WorkdayExcelExporter {
         }
     }
 
-    /**
-     * Writes the data rows to the Excel sheet based on the list of workdays.
-     * Iterates through the workdays list and creates a new row for each workday.
-     * Applies a default style to data cells.
-     * Auto-sizes columns after all data has been written for better presentation.
-     */
     private void writeDataLines() {
-        int rowCount = 1; // Start writing data from row 1 (after the header row)
+        int rowCount = 1; 
 
-        // Create a default cell style for data rows
         CellStyle style = workbook.createCellStyle();
         Font font = workbook.createFont();
-        font.setFontHeightInPoints((short) 12); // Set font size to 12 points
+        font.setFontHeightInPoints((short) 12);
         style.setFont(font);
 
-        // Iterate through each workday and create a corresponding row
         for (Workday workday : workdays) {
-            Row row = sheet.createRow(rowCount++); // Create a new row and increment rowCount
-            int columnCount = 0; // Reset column count for each new row
+            Row row = sheet.createRow(rowCount++); 
+            int columnCount = 0;
 
-            // Populate cells with workday data
             createCell(row, columnCount++, workday.getDate(), style);
-            // Handle potential null Workplace or WorkplaceName gracefully
             createCell(row, columnCount++, (workday.getWorkplace() != null ? workday.getWorkplace().getWorkplaceName() : "N/A"), style);
             createCell(row, columnCount++, workday.getHoursWorked(), style);
             createCell(row, columnCount++, workday.getOvertimeHours(), style);
             createCell(row, columnCount++, workday.getTransportCost(), style);
         }
 
-        // Auto-size all columns after writing all data to ensure content fits
-        // Assuming 5 columns (Date, Workplace, Hours Worked, Overtime Hours, Transport Cost)
         for (int i = 0; i < 5; i++) {
             sheet.autoSizeColumn(i);
         }
     }
 
-    /**
-     * Exports the workday data to an Excel file in a ByteArrayOutputStream.
-     * This is the main method to call to generate the report.
-     *
-     * @return A ByteArrayOutputStream containing the generated Excel file data.
-     * @throws IOException If an I/O error occurs during workbook writing.
-     */
     public ByteArrayOutputStream export() throws IOException {
         writeHeaderLine(); // Write the header row
         writeDataLines();  // Write all data rows
