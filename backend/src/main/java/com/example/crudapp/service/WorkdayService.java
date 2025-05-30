@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.crudapp.dto.ServiceResponse;
 import com.example.crudapp.dto.WorkdayDTO;
+import com.example.crudapp.exporter.WorkdayExcelExporter;
 import com.example.crudapp.model.Employee;
 import com.example.crudapp.model.Workday;
 import com.example.crudapp.model.Workplace;
@@ -75,48 +76,33 @@ public class WorkdayService {
 
     }
 
-    public ByteArrayOutputStream generateWorkdayExcelReport(Employee employee, LocalDate startDate, LocalDate endDate)
-            throws IOException {
-        List<Workday> workdays = workdayRepository.findByEmployeeIdAndDateBetween(employee.getId(), startDate, endDate);
+    public ByteArrayOutputStream generateWorkdayExcelReport(
+            Employee employee,
+            LocalDate startDate,
+            LocalDate endDate,
+            String workplaceFilter) throws IOException {
 
-        List<WorkdayDTO> workdayDTOs = workdays.stream()
-                .map(workday -> new WorkdayDTO(
-                        workday.getDate(),
-                        workday.getWorkplace().getWorkplaceName(),
-                        workday.getHoursWorked(),
-                        workday.getOvertimeHours(),
-                        workday.getTransportCost()))
-                .collect(Collectors.toList());
 
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Workdays");
-
-        Row headerRow = (sheet).createRow(0);
-        headerRow.createCell(0).setCellValue("Date");
-        headerRow.createCell(1).setCellValue("Workplace");
-        headerRow.createCell(2).setCellValue("Hours Worked");
-        headerRow.createCell(3).setCellValue("Overtime Hours");
-        headerRow.createCell(4).setCellValue("Transport Cost");
-
-        int rowNum = 1;
-        for (WorkdayDTO workdayDTO : workdayDTOs) {
-            Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(workdayDTO.getDate().toString());
-            row.createCell(1).setCellValue(workdayDTO.getWorkplaceName());
-            row.createCell(2).setCellValue(workdayDTO.getHoursWorked());
-            row.createCell(3).setCellValue(workdayDTO.getOvertimeHours());
-            row.createCell(4).setCellValue(workdayDTO.getTransportCost());
+        List<Workday> records = workdayRepository.findByEmployeeIdAndDateBetween(employee.getId(), startDate, endDate);
+        List<Workday> filteredRecords;
+        if (workplaceFilter != null && !workplaceFilter.isEmpty()) {
+            filteredRecords = records.stream()
+                    .filter(record -> record.getWorkplace() != null &&
+                                     workplaceFilter.equalsIgnoreCase(record.getWorkplace().getWorkplaceName()))
+                    .collect(Collectors.toList());
+        } else {
+            filteredRecords = records;
         }
 
-        for (int i = 0; i < 5; i++) {
-            sheet.autoSizeColumn(i);
-        }
+        WorkdayExcelExporter exporter = new WorkdayExcelExporter(filteredRecords);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        workbook.write(out);
-        workbook.close();
-        return out;
+        return exporter.export();
     }
+
+    // Example of a WorkdayDTO and ServiceResponse if you have them
+    // Ensure your DTOs and Models have necessary getters and setters
+    // so the exporter can access the data.
+    // ...
 
     public ServiceResponse getWorkdaysFiltered(Long employeeId, LocalDate startDate, LocalDate endDate, Long workplaceId) {
         List<Workday> workdays;

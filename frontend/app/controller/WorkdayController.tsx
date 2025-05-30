@@ -1,7 +1,8 @@
 // app/controller/WorkdayController.ts
 
-import apiClient from "../utils/apiClient";
+import apiClient from "../utils/apiClient"; // Assuming apiClient is configured for your backend base URL
 
+// Existing interfaces
 interface WorkdayRegistrationData {
   employeeId: number;
   workplaceId: number;
@@ -28,7 +29,7 @@ export const workdayRegistration = async (
     }
 
     const response = await apiClient.post<ServiceResponse<any>>(
-      "/workday/register", 
+      "/workday/register",
       workdayData,
       {
         headers: {
@@ -65,7 +66,7 @@ export const fetchWorkplacesByEmployeeId = async (employeeId: number): Promise<S
     }
 
     const response = await apiClient.get<ServiceResponse<WorkplaceOption[]>>(
-      `/workplace/${employeeId}`, // This was already corrected to match your WorkplaceController
+      `/workplace/${employeeId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -135,6 +136,88 @@ export const getWorkdaysByEmployeeAndFilters = async (
     if (error.response) {
       const message = error.response.data?.message || "Failed to retrieve workdays.";
       return { success: false, message };
+    } else if (error.request) {
+      return { success: false, message: "Network error, please check your connection." };
+    } else {
+      return { success: false, message: "An unexpected error occurred: " + error.message };
+    }
+  }
+};
+
+
+export const downloadWorkdayReport = async (
+  employeeId: number,
+  startDate: string,
+  endDate: string,
+  workplace?: string // Optional workplace filter
+): Promise<ServiceResponse<void>> => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return { success: false, message: "Authentication token not found." };
+    }
+
+    // Build query parameters for the GET request
+    const queryParams = new URLSearchParams({
+      startDate: startDate,
+      endDate: endDate,
+    });
+
+    if (workplace) {
+      queryParams.append("workplace", workplace);
+    }
+
+    // Construct the full URL for the report download endpoint
+    const url = `/workday-report/${employeeId}?${queryParams.toString()}`;
+
+    // Make the GET request. Crucially, set responseType to 'blob' to handle binary data.
+    const response = await apiClient.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // Inform server we prefer Excel
+      },
+      responseType: 'blob', // This is critical for Axios to handle binary data
+      withCredentials: true,
+    });
+
+    // Extract filename from Content-Disposition header
+    // The backend sets: headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"");
+    const contentDisposition = response.headers['content-disposition'];
+    let filename = `workday_report_${employeeId}.xlsx`; // Default filename if header is missing
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
+      if (filenameMatch && filenameMatch[1]) {
+        filename = filenameMatch[1];
+      }
+    }
+
+    // Create a Blob URL and trigger download
+    const blob = new Blob([response.data as BlobPart], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const downloadUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', filename); // Set the filename for download
+    document.body.appendChild(link); // Append to body (required for Firefox)
+    link.click(); // Programmatically click the link to trigger download
+    link.remove(); // Clean up the temporary link
+    window.URL.revokeObjectURL(downloadUrl); // Release the object URL
+
+    return { success: true, message: "Workday report downloaded successfully!" };
+
+  } catch (error: any) {
+    console.error("Error downloading workday report:", error);
+    if (error.response) {
+      // Attempt to read error message from response if it's not a blob (e.g., JSON error from server)
+      try {
+        const errorData = JSON.parse(await error.response.data.text()); // Try to parse as JSON
+        const message = errorData.message || "Failed to download report.";
+        return { success: false, message };
+      } catch (parseError) {
+        // If it's not JSON, just use a generic message
+        const message = error.response.data?.message || "Failed to download report. Server responded with an error.";
+        return { success: false, message };
+      }
     } else if (error.request) {
       return { success: false, message: "Network error, please check your connection." };
     } else {

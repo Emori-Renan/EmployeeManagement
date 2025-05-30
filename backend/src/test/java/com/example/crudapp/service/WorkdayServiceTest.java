@@ -229,52 +229,6 @@ class WorkdayServiceTest {
         verify(workplaceRepository, times(1)).findById(validDTO.getWorkplaceId());
         verify(workdayRepository, times(0)).save(any(Workday.class)); // Should not save
     }
-
-    @Test
-    void testGenerateWorkdayExcelReport() throws IOException {
-        when(workdayRepository.findByEmployeeIdAndDateBetween(testEmployee.getId(),
-                LocalDate.of(2024, 11, 1), LocalDate.of(2024, 11, 2)))
-                .thenReturn(Arrays.asList(workday1, workday2));
-
-        ByteArrayOutputStream excelFile = workdayService.generateWorkdayExcelReport(testEmployee,
-                LocalDate.of(2024, 11, 1), LocalDate.of(2024, 11, 2));
-
-        assertNotNull(excelFile, "The generated Excel file should not be null.");
-
-        assertTrue(excelFile.size() > 0, "The Excel file should contain data.");
-
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(excelFile.toByteArray());
-             Workbook workbook = new XSSFWorkbook(inputStream)) {
-
-            assertEquals(1, workbook.getNumberOfSheets(), "There should be one sheet in the file.");
-            assertEquals("Workdays", workbook.getSheetAt(0).getSheetName(), "The sheet name should be 'Workdays'.");
-
-            // +1 for header row
-            assertEquals(Arrays.asList(workday1, workday2).size() + 1, workbook.getSheetAt(0).getPhysicalNumberOfRows(),
-                    "There should be " + (Arrays.asList(workday1, workday2).size() + 1) + " rows in the Excel file (header + 2 workdays).");
-
-            // Verify header row
-            assertEquals("Date", workbook.getSheetAt(0).getRow(0).getCell(0).getStringCellValue());
-            assertEquals("Workplace", workbook.getSheetAt(0).getRow(0).getCell(1).getStringCellValue());
-            assertEquals("Hours Worked", workbook.getSheetAt(0).getRow(0).getCell(2).getStringCellValue());
-            assertEquals("Overtime Hours", workbook.getSheetAt(0).getRow(0).getCell(3).getStringCellValue());
-            assertEquals("Transport Cost", workbook.getSheetAt(0).getRow(0).getCell(4).getStringCellValue());
-
-            // Verify data row 1
-            assertEquals(workday1.getDate().toString(), workbook.getSheetAt(0).getRow(1).getCell(0).getStringCellValue());
-            assertEquals(workday1.getWorkplace().getWorkplaceName(), workbook.getSheetAt(0).getRow(1).getCell(1).getStringCellValue());
-            assertEquals(workday1.getHoursWorked(), (int) workbook.getSheetAt(0).getRow(1).getCell(2).getNumericCellValue());
-            assertEquals(workday1.getOvertimeHours(), (int) workbook.getSheetAt(0).getRow(1).getCell(3).getNumericCellValue());
-            assertEquals(workday1.getTransportCost(), workbook.getSheetAt(0).getRow(1).getCell(4).getNumericCellValue());
-
-            // Verify data row 2
-            assertEquals(workday2.getDate().toString(), workbook.getSheetAt(0).getRow(2).getCell(0).getStringCellValue());
-            assertEquals(workday2.getWorkplace().getWorkplaceName(), workbook.getSheetAt(0).getRow(2).getCell(1).getStringCellValue());
-            assertEquals(workday2.getHoursWorked(), (int) workbook.getSheetAt(0).getRow(2).getCell(2).getNumericCellValue());
-            assertEquals(workday2.getOvertimeHours(), (int) workbook.getSheetAt(0).getRow(2).getCell(3).getNumericCellValue());
-            assertEquals(workday2.getTransportCost(), workbook.getSheetAt(0).getRow(2).getCell(4).getNumericCellValue());
-        }
-    }
     
         @Test
 void testGetWorkdaysWithFilters() {

@@ -37,29 +37,7 @@ public class WorkDayController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
-
-    @GetMapping("/workday-report/{employeeId}")
-    public ResponseEntity<byte[]> downloadWorkdayReport(@PathVariable Long employeeId,
-            @RequestParam String startDate,
-            @RequestParam String endDate) throws IOException {
-
-        LocalDate start = LocalDate.parse(startDate);
-        LocalDate end = LocalDate.parse(endDate);
-
-        Employee employee = new Employee();
-        employee.setId(employeeId);
-
-        ByteArrayOutputStream report = workdayService.generateWorkdayExcelReport(employee, start, end);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=workday_report.xlsx");
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .body(report.toByteArray());
-    }
-
+    
    @GetMapping("/workdays/{employeeId}/filtered")
     public ResponseEntity<ServiceResponse> getWorkdaysFiltered(
             @PathVariable Long employeeId,
@@ -70,4 +48,5 @@ public class WorkDayController {
         ServiceResponse response = workdayService.getWorkdaysFiltered(employeeId, startDate, endDate, workplaceId);
         return ResponseEntity.ok(response);
     }
+
 }

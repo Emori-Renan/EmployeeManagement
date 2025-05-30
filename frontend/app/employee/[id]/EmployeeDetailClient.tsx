@@ -7,6 +7,9 @@ import { workplaceRegistration } from "@/app/controller/WorkplaceController";
 import WorkdayRegistrationModal from "@/app/components/WorkdayRegistrationModal";
 import WorkdayViewerModal from "@/app/components/WorkdayViewerModal"; // Import the new modal
 import apiClient from "@/app/utils/apiClient";
+import WorkplaceRegistrationModal from "@/app/components/WorkplaceRegistrationModal";
+import { useToast } from "@/app/context/ToastContext";
+import WorkdayReportDownloadModal from "@/app/components/WorkdayReportModal";
 
 interface Employee {
   employeeName: string;
@@ -27,6 +30,10 @@ export default function EmployeeDetailClient() {
   const [isWorkplaceModalOpen, setIsWorkplaceModalOpen] = useState(false);
   const [isWorkdayRegistrationModalOpen, setIsWorkdayRegistrationModalOpen] = useState(false); // Renamed for clarity
   const [isWorkdayViewerModalOpen, setIsWorkdayViewerModalOpen] = useState(false); // New state for viewer modal
+  const { showToast } = useToast();
+   const [isReportDownloadModalOpen, setIsReportDownloadModalOpen] = useState(false);
+  const openReportDownloadModal = () => setIsReportDownloadModalOpen(true);
+  const closeReportDownloadModal = () => setIsReportDownloadModalOpen(false);
 
   // Functions for workplace modal
   const openWorkplaceModal = () => {
@@ -45,7 +52,7 @@ export default function EmployeeDetailClient() {
     }
 
     closeWorkplaceModal();
-    alert(`Workplace "${workplace.workplaceName}" registered successfully!`);
+    showToast(`Workplace "${workplace.workplaceName}" registered successfully!`, "success");
     fetchEmployeeDetails(); // Refresh employee details, potentially workplaces list
   };
 
@@ -136,82 +143,18 @@ export default function EmployeeDetailClient() {
         <button className="btn btn-info" onClick={openWorkdayViewerModal}>
           View Workdays
         </button>
+        <button className="btn btn-success" onClick={openReportDownloadModal}>
+          Download Workday Report
+        </button>
       </div>
 
-      {/* Workplace Registration Modal */}
-      {isWorkplaceModalOpen && (
-        <dialog id="workplace_modal" className="modal modal-middle modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Register Workplace</h3>
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                const formData = new FormData(event.currentTarget);
-                const workplaceName = formData.get("name") as string;
-                const hourlyWageStr = formData.get("hourlyWage") as string;
-                const overtimeMultiplierStr = formData.get("overtimeMultiplier") as string;
-
-                if (workplaceName && hourlyWageStr && overtimeMultiplierStr) {
-                  const hourlyWage = parseFloat(hourlyWageStr);
-                  const overtimeMultiplier = parseFloat(overtimeMultiplierStr);
-                  if (!isNaN(hourlyWage) && !isNaN(overtimeMultiplier) && hourlyWage > 0 && overtimeMultiplier > 0) {
-                    handleRegisterWorkplace({ workplaceName, hourlyWage, overtimeMultiplier, employeeId: Number(id) });
-                  } else {
-                    alert("Please enter valid numeric values for Hourly Wage and Overtime Multiplier.");
-                  }
-                } else {
-                  alert("Please fill in all fields.");
-                }
-              }}
-            >
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Name</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Workplace Name"
-                  className="input input-bordered"
-                  name="name"
-                  required
-                />
-              </div>
-              <div className="form-control mt-4">
-                <label className="label">
-                  <span className="label-text">Hourly wage</span>
-                </label>
-                <input
-                  type="number"
-                  placeholder="Enter hourly wage"
-                  className="input input-bordered"
-                  name="hourlyWage"
-                  required
-                />
-              </div>
-              <div className="form-control mt-4">
-                <label className="label">
-                  <span className="label-text">Overtime Multiplier</span>
-                </label>
-                <input
-                  type="number"
-                  placeholder="e.g., 1.5"
-                  className="input input-bordered"
-                  name="overtimeMultiplier"
-                  step="0.01"
-                  required
-                />
-              </div>
-              <div className="modal-action mt-6">
-                <button type="submit" className="btn btn-primary">
-                  Register
-                </button>
-                <button type="button" className="btn btn-ghost" onClick={closeWorkplaceModal}>
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </dialog>
+      {!!employee.id && (
+        <WorkplaceRegistrationModal
+          isOpen={isWorkplaceModalOpen}
+          onClose={closeWorkplaceModal}
+          onRegister={handleRegisterWorkplace}
+          employeeId={employee.id}
+        />
       )}
 
       {/* Workday Registration Modal */}
@@ -224,14 +167,24 @@ export default function EmployeeDetailClient() {
         />
       )}
 
-      {/* NEW: Workday Viewer Modal */}
-      {employee.id && (
+
+      {!!employee.id && (
         <WorkdayViewerModal
           isOpen={isWorkdayViewerModalOpen}
           onClose={closeWorkdayViewerModal}
           employeeId={employee.id}
         />
       )}
+
+      {!!employee?.id && ( // Ensure employee ID exists before rendering
+        <WorkdayReportDownloadModal
+          isOpen={isReportDownloadModalOpen}
+          onClose={closeReportDownloadModal}
+          employeeId={employee.id}
+        />
+      )}
     </div>
+
+    
   );
 }
