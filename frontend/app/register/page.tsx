@@ -57,7 +57,6 @@ export default function RegisterPage() {
             saveToken(token);
             await delay(3000);
 
-            // await delay(4000);
             router.push("/");
             return;
 

@@ -86,7 +86,6 @@ public class WorkdayExcelExporterTest {
             assertNotNull(sheet, "Sheet should not be null");
             assertEquals("Workdays", sheet.getSheetName(), "Sheet name should be 'Workdays'");
 
-            // Verify Header Row
             Row headerRow = sheet.getRow(0);
             assertNotNull(headerRow, "Header row should exist");
             assertEquals("Date", headerRow.getCell(0).getStringCellValue());
@@ -95,7 +94,6 @@ public class WorkdayExcelExporterTest {
             assertEquals("Overtime Hours", headerRow.getCell(3).getStringCellValue());
             assertEquals("Transport Cost", headerRow.getCell(4).getStringCellValue());
 
-            // Verify Data Row 1 (workday1)
             Row dataRow1 = sheet.getRow(1);
             assertNotNull(dataRow1, "Data row 1 should exist");
             assertEquals(workday1.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE), dataRow1.getCell(0).getStringCellValue());
@@ -104,7 +102,6 @@ public class WorkdayExcelExporterTest {
             assertEquals(workday1.getOvertimeHours(), dataRow1.getCell(3).getNumericCellValue());
             assertEquals(workday1.getTransportCost(), dataRow1.getCell(4).getNumericCellValue(), 0.001); // Delta for double comparison
 
-            // Verify Data Row 2 (workday2)
             Row dataRow2 = sheet.getRow(2);
             assertNotNull(dataRow2, "Data row 2 should exist");
             assertEquals(workday2.getDate().format(DateTimeFormatter.ISO_LOCAL_DATE), dataRow2.getCell(0).getStringCellValue());

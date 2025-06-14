@@ -11,7 +11,6 @@ public class EmployeeRegistrationDTO {
     @NotBlank(message = "Role is mandatory")
     private String role;  // Should be either "ADMIN" or "EMPLOYEE"
 
-    //getters and setters
     public String getEmployeeName() {
         return employeeName;
     }

@@ -8,14 +8,14 @@ import com.example.crudapp.dto.SalaryDto;
 import com.example.crudapp.dto.ServiceResponse;
 import com.example.crudapp.model.Employee;
 import com.example.crudapp.model.Salary;
-import com.example.crudapp.repository.EmployeeRepository; // Import EmployeeRepository
+import com.example.crudapp.repository.EmployeeRepository; 
 import com.example.crudapp.repository.SalaryRepository;
 
 @Service
 public class SalaryService {
 
     private final SalaryRepository salaryRepository;
-    private final EmployeeRepository employeeRepository; // Inject EmployeeRepository
+    private final EmployeeRepository employeeRepository;
 
     public SalaryService(SalaryRepository salaryRepository, EmployeeRepository employeeRepository) {
         this.salaryRepository = salaryRepository;
@@ -24,7 +24,6 @@ public class SalaryService {
 
     public ServiceResponse registerSalary(SalaryDto salaryDTO) {
         try {
-            // Check if a salary already exists for the same employee and month/year
             Optional<Salary> existingSalary = salaryRepository.findByEmployeeIdAndMonthYear(
                     salaryDTO.getEmployeeId(),
                     salaryDTO.getMonthYear());
@@ -34,11 +33,9 @@ public class SalaryService {
                         "Salary already exists for this employee for this month/year.");
             }
 
-            // Retrieve Employee
             Employee employee = employeeRepository.findById(salaryDTO.getEmployeeId())
                     .orElseThrow(() -> new IllegalArgumentException("Employee not found with ID: " + salaryDTO.getEmployeeId()));
 
-            // Map DTO to Entity
             Salary salary = new Salary();
             salary.setEmployee(employee);
             salary.setMonthYear(salaryDTO.getMonthYear());
@@ -48,7 +45,6 @@ public class SalaryService {
             salary.setTotalTransportCost(salaryDTO.getTotalTransportCost());
             salary.setFinalSalary(salaryDTO.getFinalSalary());
 
-            // Save Salary
             Salary savedSalary = salaryRepository.save(salary);
             return new ServiceResponse(true, "Salary registered successfully", savedSalary);
         } catch (IllegalArgumentException e) {

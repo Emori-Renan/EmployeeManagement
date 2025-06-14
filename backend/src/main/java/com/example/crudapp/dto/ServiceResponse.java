@@ -16,7 +16,6 @@ public class ServiceResponse {
         this(success, message, null);
     }
 
-     // Factory methods for success and error responses
      public static ServiceResponse success(String message, Object data) {
         return new ServiceResponse(true, message, data);
     }
@@ -25,7 +24,6 @@ public class ServiceResponse {
         return new ServiceResponse(false, message);
     }
 
-    // Getters and setters
     public boolean isSuccess() {
         return success;
     }

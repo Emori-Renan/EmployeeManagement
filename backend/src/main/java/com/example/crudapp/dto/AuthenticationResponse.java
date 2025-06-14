@@ -4,13 +4,11 @@ public class AuthenticationResponse {
     private String token;
     private String message;
 
-    // Constructor
     public AuthenticationResponse(String token, String message) {
         this.token = token;
         this.message = message;
     }
 
-    // Getters and Setters
     public String getToken() {
         return token;
     }

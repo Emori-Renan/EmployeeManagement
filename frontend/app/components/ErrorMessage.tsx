@@ -1,13 +1,13 @@
 import React from "react";
 
 interface ErrorMessageProps {
-  errorType: boolean; // Whether the error should be shown
-  message: string | null;    // The error message to display
+  errorType: boolean;
+  message: string | null;   
 }
 
 const ErrorMessage: React.FC<ErrorMessageProps> = ({ errorType, message }) => {
   if (!errorType) {
-    return null; // Do not render anything if errorType is false
+    return null; 
   }
 
   return (

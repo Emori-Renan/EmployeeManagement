@@ -35,7 +35,6 @@ public class WorkdayService {
 
     public ServiceResponse registerWorkday(WorkdayDTO workdayDTO) {
         try {
-            // Check if a workday already exists for the same employee, workplace, and date
             Optional<Workday> existingWorkday = workdayRepository.findByEmployeeIdAndWorkplaceIdAndDate(
                     workdayDTO.getEmployeeId(),
                     workdayDTO.getWorkplaceId(),
@@ -46,13 +45,11 @@ public class WorkdayService {
                         "Workday already exists for this employee at this workplace on this date.");
             }
 
-            // Retrieve Employee and Workplace
             Employee employee = employeeRepository.findById(workdayDTO.getEmployeeId())
                     .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
             Workplace workplace = workplaceRepository.findById(workdayDTO.getWorkplaceId())
                     .orElseThrow(() -> new IllegalArgumentException("Workplace not found"));
 
-            // Map DTO to Entity
             Workday workday = new Workday();
             workday.setEmployee(employee);
             workday.setWorkplace(workplace);
@@ -61,7 +58,6 @@ public class WorkdayService {
             workday.setOvertimeHours((int) workdayDTO.getOvertimeHours());
             workday.setTransportCost(workdayDTO.getTransportCost());
 
-            // Save and return
             Workday savedWorkday = workdayRepository.save(workday);
 
             return ServiceResponse.success("Workday registered successfully", savedWorkday);
@@ -92,11 +88,6 @@ public class WorkdayService {
 
         return exporter.export();
     }
-
-    // Example of a WorkdayDTO and ServiceResponse if you have them
-    // Ensure your DTOs and Models have necessary getters and setters
-    // so the exporter can access the data.
-    // ...
 
     public ServiceResponse getWorkdaysFiltered(Long employeeId, LocalDate startDate, LocalDate endDate, Long workplaceId) {
         List<Workday> workdays;

@@ -1,6 +1,5 @@
 import { clearToken, saveToken } from "../utils/auth";
 
-// app/store/middleware.ts
 export const authMiddleware = (store) => (next) => (action) => {
     const result = next(action);
   

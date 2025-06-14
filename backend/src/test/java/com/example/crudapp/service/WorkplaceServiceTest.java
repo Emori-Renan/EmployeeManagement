@@ -106,8 +106,8 @@ class WorkplaceServiceTest {
         assertEquals("Workplace registered successfully", response.getMessage());
         assertNotNull(response.getData());
         assertEquals("Office", ((Workplace) response.getData()).getWorkplaceName());
-        assertEquals(25.0, ((Workplace) response.getData()).getHourlyWage(), 0.001); // Use delta for double comparison
-        assertEquals(1.75, ((Workplace) response.getData()).getOvertimeMultiplier(), 0.001); // Use delta for double comparison
+        assertEquals(25.0, ((Workplace) response.getData()).getHourlyWage(), 0.001); 
+        assertEquals(1.75, ((Workplace) response.getData()).getOvertimeMultiplier(), 0.001); 
 
         verify(repository, times(1)).save(any(Workplace.class));
     }

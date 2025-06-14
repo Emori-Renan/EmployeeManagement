@@ -58,7 +58,6 @@ export default function LoginPage() {
             if (data instanceof AuthError) {
                 throw data;
             }
-            // Handle successful login (e.g., redirect or store tokens)
             const token = data.token ?? ''
             dispatch(loginSuccess(token));
             saveToken(token);

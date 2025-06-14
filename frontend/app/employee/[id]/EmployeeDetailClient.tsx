@@ -1,11 +1,10 @@
-// app/employees/[id]/EmployeeDetailClient.tsx (modify existing file)
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { workplaceRegistration } from "@/app/controller/WorkplaceController";
 import WorkdayRegistrationModal from "@/app/components/WorkdayRegistrationModal";
-import WorkdayViewerModal from "@/app/components/WorkdayViewerModal"; // Import the new modal
+import WorkdayViewerModal from "@/app/components/WorkdayViewerModal";
 import apiClient from "@/app/utils/apiClient";
 import WorkplaceRegistrationModal from "@/app/components/WorkplaceRegistrationModal";
 import { useToast } from "@/app/context/ToastContext";
@@ -28,14 +27,13 @@ export default function EmployeeDetailClient() {
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [error, setError] = useState("");
   const [isWorkplaceModalOpen, setIsWorkplaceModalOpen] = useState(false);
-  const [isWorkdayRegistrationModalOpen, setIsWorkdayRegistrationModalOpen] = useState(false); // Renamed for clarity
-  const [isWorkdayViewerModalOpen, setIsWorkdayViewerModalOpen] = useState(false); // New state for viewer modal
+  const [isWorkdayRegistrationModalOpen, setIsWorkdayRegistrationModalOpen] = useState(false);
+  const [isWorkdayViewerModalOpen, setIsWorkdayViewerModalOpen] = useState(false); 
   const { showToast } = useToast();
    const [isReportDownloadModalOpen, setIsReportDownloadModalOpen] = useState(false);
   const openReportDownloadModal = () => setIsReportDownloadModalOpen(true);
   const closeReportDownloadModal = () => setIsReportDownloadModalOpen(false);
 
-  // Functions for workplace modal
   const openWorkplaceModal = () => {
     setIsWorkplaceModalOpen(true);
   };
@@ -53,10 +51,9 @@ export default function EmployeeDetailClient() {
 
     closeWorkplaceModal();
     showToast(`Workplace "${workplace.workplaceName}" registered successfully!`, "success");
-    fetchEmployeeDetails(); // Refresh employee details, potentially workplaces list
+    fetchEmployeeDetails();
   };
 
-  // Functions for workday registration modal
   const openWorkdayRegistrationModal = () => {
     setIsWorkdayRegistrationModalOpen(true);
   };
@@ -67,11 +64,8 @@ export default function EmployeeDetailClient() {
 
   const handleWorkdayRegistered = () => {
     console.log("Workday registered successfully in parent component.");
-    // No need to fetch employee details here unless workdays are displayed directly on the main page.
-    // The WorkdayViewerModal will fetch its own data.
   };
 
-  // Functions for workday viewer modal (NEW)
   const openWorkdayViewerModal = () => {
     setIsWorkdayViewerModalOpen(true);
   };
@@ -139,7 +133,6 @@ export default function EmployeeDetailClient() {
         <button className="btn btn-secondary" onClick={openWorkdayRegistrationModal}>
           Register Workday
         </button>
-        {/* NEW BUTTON */}
         <button className="btn btn-info" onClick={openWorkdayViewerModal}>
           View Workdays
         </button>
@@ -157,7 +150,6 @@ export default function EmployeeDetailClient() {
         />
       )}
 
-      {/* Workday Registration Modal */}
       {employee.id && (
         <WorkdayRegistrationModal
           isOpen={isWorkdayRegistrationModalOpen}
@@ -176,7 +168,7 @@ export default function EmployeeDetailClient() {
         />
       )}
 
-      {!!employee?.id && ( // Ensure employee ID exists before rendering
+      {!!employee?.id && ( 
         <WorkdayReportDownloadModal
           isOpen={isReportDownloadModalOpen}
           onClose={closeReportDownloadModal}

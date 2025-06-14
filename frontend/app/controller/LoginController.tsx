@@ -7,8 +7,8 @@ interface LoginPayload {
 }
 
 interface LoginResponse {
-    token?: string; // Token is present only when the login is successful
-    message: string; // Error or success message
+    token?: string;
+    message: string; 
 }
 
 export const login = async (payload: LoginPayload) => {
@@ -18,7 +18,7 @@ export const login = async (payload: LoginPayload) => {
         console.log(response.status)
         if (response.status === 200 ) {
             console.log("Login successful", response.data);
-            return response.data; // Retorna os dados da resposta da API
+            return response.data; 
         } else {
             throw new AuthError("Login failed", response.status);
         }

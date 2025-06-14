@@ -43,7 +43,6 @@ export default function WorkdayViewerModal({
 
   const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
-  // Load default filters and workplaces when modal opens
   useEffect(() => {
     if (!isOpen) return;
 
@@ -108,7 +107,6 @@ export default function WorkdayViewerModal({
       <div className="modal-box w-11/12 max-w-5xl">
         <h3 className="text-xl font-bold mb-4">View Workdays</h3>
 
-        {/* Filter Section */}
         <div className="flex flex-wrap gap-4 mb-4 items-end">
           <div className="form-control w-full md:w-1/4">
             <label className="label">
@@ -170,10 +168,8 @@ export default function WorkdayViewerModal({
           </div>
         </div>
 
-        {/* Error */}
         {error && <div className="text-red-500 mb-4">{error}</div>}
 
-        {/* Table */}
         {workdays.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="table table-zebra w-full">

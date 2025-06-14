@@ -19,27 +19,26 @@ public class Salary {
 
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;  // Referência ao funcionário
+    private Employee employee; 
 
     @Column(name = "month_year", nullable = false, length = 7)
-    private String monthYear;  // Mês e ano do cálculo (ex: 2024-11)
+    private String monthYear;  
 
     @Column(name = "total_days_worked", nullable = false)
-    private Integer totalDaysWorked;  // Total de dias trabalhados
+    private Integer totalDaysWorked;  
 
     @Column(name = "total_hours", nullable = false)
-    private Double totalHours;  // Total de horas trabalhadas no mês
+    private Double totalHours; 
 
     @Column(name = "overtime_hours", nullable = false)
-    private Double overtimeHours;  // Total de horas extras
+    private Double overtimeHours; 
 
     @Column(name = "total_transport_cost", nullable = false)
-    private Double totalTransportCost;  // Custo total de transporte
+    private Double totalTransportCost;  
 
     @Column(name = "final_salary", nullable = false)
-    private Double finalSalary;  // Salário final calculado
+    private Double finalSalary; 
 
-    // Construtores, getters e setters
     public Salary() {
     }
 

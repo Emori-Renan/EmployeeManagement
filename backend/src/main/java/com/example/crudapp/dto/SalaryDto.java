@@ -3,7 +3,7 @@ package com.example.crudapp.dto;
 public class SalaryDto {
 
     private Long id;
-    private Long employeeId; // ID do funcionário
+    private Long employeeId; 
     private String monthYear;
     private Integer totalDaysWorked;
     private Double totalHours;
@@ -11,7 +11,6 @@ public class SalaryDto {
     private Double totalTransportCost;
     private Double finalSalary;
 
-    // Construtores
     public SalaryDto() {
     }
 
@@ -28,7 +27,6 @@ public class SalaryDto {
         this.finalSalary = finalSalary;
     }
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }

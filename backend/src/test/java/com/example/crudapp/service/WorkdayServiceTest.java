@@ -47,15 +47,14 @@ class WorkdayServiceTest {
     private Employee testEmployee;
     private Workday workday1;
     private Workday workday2;
-    private Workplace workplaceA; // Specific workplace for workday1
-    private Workplace workplaceB; // Specific workplace for workday2
+    private Workplace workplaceA;
+    private Workplace workplaceB; 
 
     private WorkdayDTO validDTO;
     private WorkdayDTO existingWorkdayDTO;
 
     @BeforeEach
     void setUp() {
-        // No need for MockitoAnnotations.openMocks(this) with @ExtendWith(MockitoExtension.class)
 
         testEmployee = new Employee();
         testEmployee.setId(1L);
@@ -63,7 +62,7 @@ class WorkdayServiceTest {
         testEmployee.setRole("employee");
 
         workplaceA = new Workplace();
-        workplaceA.setId(1L); // Changed to 1L to match validDTO's workplaceId
+        workplaceA.setId(1L); 
         workplaceA.setWorkplaceName("Office A");
 
         workplaceB = new Workplace();
@@ -76,7 +75,7 @@ class WorkdayServiceTest {
         workday1.setOvertimeHours(2);
         workday1.setTransportCost(50.0);
         workday1.setEmployee(testEmployee);
-        workday1.setWorkplace(workplaceA); // Assign specific workplace
+        workday1.setWorkplace(workplaceA);
 
         workday2 = new Workday();
         workday2.setDate(LocalDate.of(2024, 11, 2));
@@ -84,12 +83,12 @@ class WorkdayServiceTest {
         workday2.setOvertimeHours(1);
         workday2.setTransportCost(50.0);
         workday2.setEmployee(testEmployee);
-        workday2.setWorkplace(workplaceB); // Assign specific workplace
+        workday2.setWorkplace(workplaceB); 
 
         validDTO = new WorkdayDTO();
-        validDTO.setWorkplaceName("Office A"); // This field in DTO is not used for mapping in service
+        validDTO.setWorkplaceName("Office A"); 
         validDTO.setEmployeeId(1L);
-        validDTO.setWorkplaceId(1L); // This should match workplaceA's ID
+        validDTO.setWorkplaceId(1L);
         validDTO.setDate(LocalDate.now());
         validDTO.setHoursWorked(8);
         validDTO.setOvertimeHours(2);
@@ -98,7 +97,7 @@ class WorkdayServiceTest {
         existingWorkdayDTO = new WorkdayDTO();
         existingWorkdayDTO.setEmployeeId(1L);
         existingWorkdayDTO.setWorkplaceId(1L);
-        existingWorkdayDTO.setDate(LocalDate.now()); // This date will be used to check for existing workday
+        existingWorkdayDTO.setDate(LocalDate.now()); 
     }
 
 
@@ -112,7 +111,7 @@ class WorkdayServiceTest {
 
         Workplace mockWorkplace = new Workplace();
         mockWorkplace.setId(1L);
-        mockWorkplace.setWorkplaceName("Office A"); // Set name for consistency, though not strictly needed for this test
+        mockWorkplace.setWorkplaceName("Office A"); 
 
         Workday savedWorkday = new Workday();
         savedWorkday.setId(1L);
@@ -126,7 +125,7 @@ class WorkdayServiceTest {
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(mockEmployee));
         when(workplaceRepository.findById(1L)).thenReturn(Optional.of(mockWorkplace));
         when(workdayRepository.findByEmployeeIdAndWorkplaceIdAndDate(1L, 1L, validDTO.getDate()))
-                .thenReturn(Optional.empty()); // No existing workday
+                .thenReturn(Optional.empty()); 
         when(workdayRepository.save(any(Workday.class))).thenReturn(savedWorkday);
 
         // Act
@@ -161,13 +160,13 @@ class WorkdayServiceTest {
         Workday existingWorkday = new Workday();
         existingWorkday.setEmployee(mockEmployee);
         existingWorkday.setWorkplace(mockWorkplace);
-        existingWorkday.setDate(existingWorkdayDTO.getDate()); // Use the date from existingWorkdayDTO
+        existingWorkday.setDate(existingWorkdayDTO.getDate());
 
         when(workdayRepository.findByEmployeeIdAndWorkplaceIdAndDate(
                 existingWorkdayDTO.getEmployeeId(),
                 existingWorkdayDTO.getWorkplaceId(),
                 existingWorkdayDTO.getDate()))
-                .thenReturn(Optional.of(existingWorkday)); // Simulate existing workday
+                .thenReturn(Optional.of(existingWorkday));
 
         // Act
         ServiceResponse response = workdayService.registerWorkday(existingWorkdayDTO);
@@ -175,21 +174,21 @@ class WorkdayServiceTest {
         // Assert
         assertFalse(response.isSuccess());
         assertEquals("Workday already exists for this employee at this workplace on this date.", response.getMessage());
-        verify(employeeRepository, times(0)).findById(any(Long.class)); // Should not try to find employee
-        verify(workplaceRepository, times(0)).findById(any(Long.class)); // Should not try to find workplace
+        verify(employeeRepository, times(0)).findById(any(Long.class)); 
+        verify(workplaceRepository, times(0)).findById(any(Long.class)); 
         verify(workdayRepository, times(1)).findByEmployeeIdAndWorkplaceIdAndDate(
                 existingWorkdayDTO.getEmployeeId(),
                 existingWorkdayDTO.getWorkplaceId(),
                 existingWorkdayDTO.getDate());
-        verify(workdayRepository, times(0)).save(any(Workday.class)); // Should not save
+        verify(workdayRepository, times(0)).save(any(Workday.class)); 
     }
 
     @Test
     void registerWorkday_shouldReturnErrorIfEmployeeNotFound() {
         // Arrange
         when(workdayRepository.findByEmployeeIdAndWorkplaceIdAndDate(any(Long.class), any(Long.class), any(LocalDate.class)))
-                .thenReturn(Optional.empty()); // No existing workday
-        when(employeeRepository.findById(validDTO.getEmployeeId())).thenReturn(Optional.empty()); // Employee not found
+                .thenReturn(Optional.empty());
+        when(employeeRepository.findById(validDTO.getEmployeeId())).thenReturn(Optional.empty()); 
 
         // Act
         ServiceResponse response = workdayService.registerWorkday(validDTO);
@@ -198,8 +197,8 @@ class WorkdayServiceTest {
         assertFalse(response.isSuccess());
         assertTrue(response.getMessage().contains("Employee not found"));
         verify(employeeRepository, times(1)).findById(validDTO.getEmployeeId());
-        verify(workplaceRepository, times(0)).findById(any(Long.class)); // Should not try to find workplace
-        verify(workdayRepository, times(0)).save(any(Workday.class)); // Should not save
+        verify(workplaceRepository, times(0)).findById(any(Long.class)); 
+        verify(workdayRepository, times(0)).save(any(Workday.class));
     }
 
     @Test
@@ -209,9 +208,9 @@ class WorkdayServiceTest {
         mockEmployee.setId(1L);
 
         when(workdayRepository.findByEmployeeIdAndWorkplaceIdAndDate(any(Long.class), any(Long.class), any(LocalDate.class)))
-                .thenReturn(Optional.empty()); // No existing workday
-        when(employeeRepository.findById(validDTO.getEmployeeId())).thenReturn(Optional.of(mockEmployee)); // Employee found
-        when(workplaceRepository.findById(validDTO.getWorkplaceId())).thenReturn(Optional.empty()); // Workplace not found
+                .thenReturn(Optional.empty()); 
+        when(employeeRepository.findById(validDTO.getEmployeeId())).thenReturn(Optional.of(mockEmployee));
+        when(workplaceRepository.findById(validDTO.getWorkplaceId())).thenReturn(Optional.empty());
 
         // Act
         ServiceResponse response = workdayService.registerWorkday(validDTO);
@@ -221,7 +220,7 @@ class WorkdayServiceTest {
         assertTrue(response.getMessage().contains("Workplace not found"));
         verify(employeeRepository, times(1)).findById(validDTO.getEmployeeId());
         verify(workplaceRepository, times(1)).findById(validDTO.getWorkplaceId());
-        verify(workdayRepository, times(0)).save(any(Workday.class)); // Should not save
+        verify(workdayRepository, times(0)).save(any(Workday.class)); 
     }
     
         @Test

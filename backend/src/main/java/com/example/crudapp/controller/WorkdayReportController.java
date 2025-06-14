@@ -1,7 +1,7 @@
 package com.example.crudapp.controller;
 
-import com.example.crudapp.model.Employee; // Assuming you have this model
-import com.example.crudapp.service.WorkdayService; // Import your service
+import com.example.crudapp.model.Employee;
+import com.example.crudapp.service.WorkdayService; 
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,6 @@ public class WorkdayReportController {
 
     private final WorkdayService workdayService;
 
-    // Constructor Injection for the WorkdayService
     public WorkdayReportController(WorkdayService workdayService) {
         this.workdayService = workdayService;
     }

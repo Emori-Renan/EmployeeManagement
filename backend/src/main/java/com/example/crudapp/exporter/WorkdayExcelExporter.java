@@ -15,47 +15,29 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/**
- * WorkdayExcelExporter is responsible for generating an Excel workbook
- * containing workday data. It takes a list of Workday objects and
- * transforms them into a structured .xlsx file.
- *
- * This class uses Apache POI library for Excel generation.
- */
-// @Component // Uncomment if you want Spring to manage this as a bean
+
 public class WorkdayExcelExporter {
 
     private Workbook workbook;
     private Sheet sheet;
     private List<Workday> workdays;
 
-    /**
-     * Constructs a new WorkdayExcelExporter.
-     * Initializes an XSSFWorkbook and creates a sheet named "Workdays".
-     *
-     * @param workdays The list of Workday objects to be exported to Excel.
-     */
     public WorkdayExcelExporter(List<Workday> workdays) {
         this.workdays = workdays;
         workbook = new XSSFWorkbook();
         sheet = workbook.createSheet("Workdays");
     }
 
-    /**
-     * Writes the header row to the Excel sheet.
-     * Sets up cell styles for the header (bold font, larger size).
-     */
-    private void writeHeaderLine() {
-        Row headerRow = sheet.createRow(0); // Header is always the first row (row 0)
 
-        // Create a cell style for the header
+    private void writeHeaderLine() {
+        Row headerRow = sheet.createRow(0); 
+
         CellStyle style = workbook.createCellStyle();
         Font font = workbook.createFont();
-        font.setBold(true); // Make font bold
-        font.setFontHeightInPoints((short) 14); // Set font size to 14 points
-        style.setFont(font); // Apply font to style
+        font.setBold(true);
+        font.setFontHeightInPoints((short) 14); 
+        style.setFont(font);
 
-        // Create header cells and set their values
         createCell(headerRow, 0, "Date", style);
         createCell(headerRow, 1, "Workplace", style);
         createCell(headerRow, 2, "Hours Worked", style);
@@ -63,19 +45,10 @@ public class WorkdayExcelExporter {
         createCell(headerRow, 4, "Transport Cost", style);
     }
 
-    /**
-     * Helper method to create a cell, set its value, and apply a style.
-     * Handles different data types (LocalDate, Integer, Double, String).
-     *
-     * @param row The row to which the cell belongs.
-     * @param columnCount The column index for the new cell.
-     * @param value The value to be set in the cell.
-     * @param style The CellStyle to apply to the cell.
-     */
-    private void createCell(Row row, int columnCount, Object value, CellStyle style) {
-        Cell cell = row.createCell(columnCount); // Create the cell at the specified column
 
-        // Set cell value based on its type
+    private void createCell(Row row, int columnCount, Object value, CellStyle style) {
+        Cell cell = row.createCell(columnCount); 
+
         if (value instanceof LocalDate localDate) {
             cell.setCellValue(localDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
         } else if (value instanceof Integer integer) {
@@ -83,13 +56,11 @@ public class WorkdayExcelExporter {
         } else if (value instanceof Double doubleValue) {
             cell.setCellValue(doubleValue);
         } else if (value != null) {
-            // For other types, convert to String. Handles potential null values gracefully.
             cell.setCellValue(value.toString());
         } else {
-            cell.setCellValue(""); // Set empty string for null values
+            cell.setCellValue(""); 
         }
 
-        // Apply the provided style if it's not null
         if (style != null) {
             cell.setCellStyle(style);
         }
@@ -120,12 +91,12 @@ public class WorkdayExcelExporter {
     }
 
     public ByteArrayOutputStream export() throws IOException {
-        writeHeaderLine(); // Write the header row
-        writeDataLines();  // Write all data rows
+        writeHeaderLine();
+        writeDataLines(); 
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        workbook.write(outputStream); // Write the workbook content to the output stream
-        workbook.close(); // Close the workbook to release resources
+        workbook.write(outputStream);
+        workbook.close(); 
         return outputStream;
     }
 }

@@ -14,23 +14,20 @@ const withAuth = (WrappedComponent) => {
     useEffect(() => {
       const token = getToken();
       if (!token || (token && !isTokenValid(token))) {
-        router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`); // Redirect to login if not authenticated
+        router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`); 
       } 
       if(token && !isAuthenticated){
         dispatch(loginSuccess(token));
       }
     }, [isAuthenticated, router]);
 
-    // While redirecting, avoid rendering the protected component
     if (!isAuthenticated) {
       return null;
     }
 
-    // Render the wrapped component with its original props
     return <WrappedComponent {...props} />;
   };
 
-  // Add a display name for easier debugging
   EnhancedComponent.displayName = `WithAuth(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
 
   return EnhancedComponent;

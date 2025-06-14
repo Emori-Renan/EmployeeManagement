@@ -17,7 +17,6 @@ public class UserDTO {
         this.age = age;
     }
 
-    // Getters and Setters
     public int getId() {
         return id;
     }

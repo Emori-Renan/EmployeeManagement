@@ -1,7 +1,5 @@
-// app/store/authSlice.ts
 import { createSlice } from '@reduxjs/toolkit';
 
-// Define the initial state without token
 const initialState = {
   token: null,
   isAuthenticated: false,

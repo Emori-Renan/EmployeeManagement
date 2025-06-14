@@ -2,7 +2,6 @@
 
 import React, { FormEvent } from "react";
 import { useToast } from "../context/ToastContext";
-// Define the Workplace type locally if not available from a module
 type Workplace = {
   workplaceName: string;
   hourlyWage: number;

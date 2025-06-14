@@ -100,7 +100,6 @@ class EmployeeServiceTest {
 
     @Test
     void registerEmployee_shouldRegisterEmployeeSuccessfully() {
-        // Mock behavior for userLoginRepository and employeeRepository
         when(employeeRepository.save(any(Employee.class))).thenReturn(savedEmployee);
         when(userLoginRepository.findByUsername("abc")).thenReturn(Optional.of(userLogin));
         // Act

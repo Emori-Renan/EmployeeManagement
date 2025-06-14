@@ -46,8 +46,6 @@ class EmployeeControllerTest {
         userLoginRepository.save(user);
     }
 
-    // ========== GET /api/employee/{id} ==========
-
     @Test
     void testGetEmployeeById_whenExists_returnsEmployee() throws Exception {
         Employee emp = new Employee();
@@ -61,8 +59,6 @@ class EmployeeControllerTest {
             .andExpect(jsonPath("$.data.employeeName").value("Alice"))
             .andExpect(jsonPath("$.data.role").value("employee"));
     }
-
-    // ========== PUT /api/employee/{id} ==========
 
     @Test
     void testUpdateEmployee_onlyUpdatesName() throws Exception {

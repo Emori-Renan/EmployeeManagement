@@ -1,4 +1,3 @@
-// app/components/WorkdayRegistrationModal.tsx
 import React, { useState, useEffect } from "react";
 import { fetchWorkplacesByEmployeeId, workdayRegistration } from "../controller/WorkdayController";
 import { useToast } from "../context/ToastContext";
@@ -7,7 +6,7 @@ interface WorkdayRegistrationModalProps {
   readonly isOpen: boolean;
   readonly onClose: () => void;
   readonly employeeId: number;
-  readonly onWorkdayRegistered: () => void; // Callback to refresh data or show success message
+  readonly onWorkdayRegistered: () => void;
 }
 
 interface WorkplaceOption {
@@ -22,7 +21,6 @@ export default function WorkdayRegistrationModal({
   onWorkdayRegistered,
 }: WorkdayRegistrationModalProps) {
   const [workplaceId, setWorkplaceId] = useState<string>("");
-  // Set default date to today in YYYY-MM-DD format for input type="date"
   const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [hoursWorked, setHoursWorked] = useState<string>("");
   const [overtimeHours, setOvertimeHours] = useState<string>("");
@@ -37,16 +35,16 @@ export default function WorkdayRegistrationModal({
       if (!isOpen || !employeeId) return;
 
       setIsLoadingWorkplaces(true);
-      setError(""); // Clear previous errors
+      setError(""); 
       const response = await fetchWorkplacesByEmployeeId(employeeId);
 
       if (response.success && response.data) {
         setWorkplaces(response.data);
         if (response.data.length > 0) {
-          setWorkplaceId(String(response.data[0].id)); // Set default to first workplace
+          setWorkplaceId(String(response.data[0].id)); 
         } else {
           setError("No workplaces found for this employee. Please register a workplace first.");
-          setWorkplaceId(""); // Clear selection if no workplaces
+          setWorkplaceId(""); 
         }
       } else {
         setError(response.message ?? "Failed to load workplaces.");
@@ -55,7 +53,7 @@ export default function WorkdayRegistrationModal({
     };
 
     loadWorkplaces();
-  }, [isOpen, employeeId]); // Depend on isOpen and employeeId to re-fetch when modal opens or employee changes
+  }, [isOpen, employeeId]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -94,11 +92,10 @@ export default function WorkdayRegistrationModal({
     const response = await workdayRegistration(workdayData);
     if (response.success) {
       showToast("Workday registered successfully!", "success");
-      onWorkdayRegistered(); // Call parent callback
-      onClose(); // Close the modal
+      onWorkdayRegistered(); 
+      onClose(); 
 
-      // Reset form fields
-      setWorkplaceId(workplaces.length > 0 ? String(workplaces[0].id) : ""); // Reset to first workplace or empty
+      setWorkplaceId(workplaces.length > 0 ? String(workplaces[0].id) : "");
       setDate(new Date().toISOString().split('T')[0]);
       setHoursWorked("");
       setOvertimeHours("");
@@ -128,7 +125,7 @@ export default function WorkdayRegistrationModal({
                 value={workplaceId}
                 onChange={(e) => setWorkplaceId(e.target.value)}
                 required
-                disabled={workplaces.length === 0} // Disable if no workplaces
+                disabled={workplaces.length === 0} 
               >
                 <option value="" disabled>
                   {workplaces.length === 0 ? "No workplaces available" : "Select a workplace"}
@@ -166,7 +163,7 @@ export default function WorkdayRegistrationModal({
               value={hoursWorked}
               onChange={(e) => setHoursWorked(e.target.value)}
               step="0.01"
-              min="0" // Ensure positive values
+              min="0" 
               required
             />
           </div>
@@ -182,7 +179,7 @@ export default function WorkdayRegistrationModal({
               value={overtimeHours}
               onChange={(e) => setOvertimeHours(e.target.value)}
               step="0.01"
-              min="0" // Ensure positive values
+              min="0" 
               required
             />
           </div>
@@ -198,7 +195,7 @@ export default function WorkdayRegistrationModal({
               value={transportCost}
               onChange={(e) => setTransportCost(e.target.value)}
               step="0.01"
-              min="0" // Ensure positive values
+              min="0" 
               required
             />
           </div>

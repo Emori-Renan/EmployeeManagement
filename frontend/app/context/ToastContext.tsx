@@ -33,7 +33,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
 
     setTimeout(() => {
       setVisible(false);
-    }, 3000); // Hide the toast after 3 seconds
+    }, 3000); 
   };
 
   return (

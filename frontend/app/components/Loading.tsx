@@ -1,4 +1,3 @@
-// components/LoadingModal.tsx
 import React from 'react';
 
 interface LoadingModalProps {

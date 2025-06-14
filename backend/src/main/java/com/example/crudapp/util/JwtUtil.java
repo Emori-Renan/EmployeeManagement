@@ -16,7 +16,6 @@ public class JwtUtil {
     private final SecretKey key;
 
     public JwtUtil() {
-        // Fixed secret (32+ chars)
         String secret = "your-256-bit-secret-your-256-bit-secret";
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }

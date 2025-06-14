@@ -39,21 +39,21 @@ public class SecurityConfig {
     @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
-        .csrf(csrf -> csrf.disable()) // Disable CSRF protection
+        .csrf(csrf -> csrf.disable()) 
         .cors(cors -> cors.configurationSource(request -> {
             CorsConfiguration config = new CorsConfiguration();
-            config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Frontend origin
-            config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allowed HTTP methods
-            config.setAllowedHeaders(Arrays.asList("*")); // Allow all headers
-            config.setAllowCredentials(true); // Allow credentials (cookies, tokens)
+            config.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+            config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); 
+            config.setAllowedHeaders(Arrays.asList("*")); 
+            config.setAllowCredentials(true); 
             return config;
         }))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/register", "/auth/login").permitAll() // Public endpoints
-            .requestMatchers("/admin/**").hasRole("ADMIN") // Restricted to ADMIN
-            .anyRequest().authenticated()) // Require authentication for any other requests
-        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter before the UsernamePasswordAuthenticationFilter
-        .httpBasic(withDefaults()); // Enable basic authentication (optional, depending on your use case)
+            .requestMatchers("/auth/register", "/auth/login").permitAll() 
+            .requestMatchers("/admin/**").hasRole("ADMIN") 
+            .anyRequest().authenticated()) 
+        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) 
+        .httpBasic(withDefaults()); 
 
     return http.build();
 }
@@ -65,8 +65,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000") // Correct!
-                        // ...
+                        .allowedOrigins("http://localhost:3000")
                         .allowCredentials(true);
             }
         };

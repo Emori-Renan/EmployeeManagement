@@ -30,7 +30,7 @@ class WorkplaceControllerTest {
     void getAllWorkplacesByEmployeeId_Success() {
         // Arrange
         Long employeeId = 1L;
-        ServiceResponse expectedResponse = new ServiceResponse(true, "Workplaces found", null); // Or whatever data you expect
+        ServiceResponse expectedResponse = new ServiceResponse(true, "Workplaces found", null);
         when(workplaceService.getAllWorkplacesByEmployeeId(employeeId)).thenReturn(expectedResponse);
 
         // Act
@@ -45,7 +45,7 @@ class WorkplaceControllerTest {
     void getAllWorkplacesByEmployeeId_NotFound() {
         // Arrange
         Long employeeId = 1L;
-        ServiceResponse expectedResponse = new ServiceResponse(false, "Workplaces not found", null); // Or an appropriate message
+        ServiceResponse expectedResponse = new ServiceResponse(false, "Workplaces not found", null); 
         when(workplaceService.getAllWorkplacesByEmployeeId(employeeId)).thenReturn(expectedResponse);
 
         // Act

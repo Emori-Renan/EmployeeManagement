@@ -27,9 +27,8 @@ class WorkplaceRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Create a test employee
         employee = new Employee();
-        employee.setId(1L); // Assuming you have an employee with ID 1
+        employee.setId(1L); 
         employee.setEmployeeName("John Doe");
         employee.setRole("employee");
 
@@ -37,7 +36,7 @@ class WorkplaceRepositoryTest {
         testWorkplace.setWorkplaceName("Office A");
         testWorkplace.setHourlyWage(30.0);
         testWorkplace.setOvertimeMultiplier(1.5);
-        testWorkplace.setEmployee(employee); // Assuming you have an employee with ID 1
+        testWorkplace.setEmployee(employee); 
         workplaceRepository.save(testWorkplace);
     }
 
@@ -52,7 +51,6 @@ class WorkplaceRepositoryTest {
 
     @Test
     void testFindByName() {
-        // Assuming you've added a findByName method to your WorkplaceRepository
         Workplace foundWorkplace = workplaceRepository.findByWorkplaceName("Office A").orElse(null);
         assertNotNull(foundWorkplace, "Workplace should be found by name.");
         assertEquals(testWorkplace.getWorkplaceName(), foundWorkplace.getWorkplaceName(), "Workplace name does not match.");

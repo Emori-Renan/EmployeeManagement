@@ -29,7 +29,6 @@ public class Workplace {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
-    // Constructors (optional, but good practice)
     public Workplace() {
     }
 

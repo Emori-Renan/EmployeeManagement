@@ -33,10 +33,9 @@ public class WorkplaceService {
         try {
             Optional<Employee> employeeOptional = employeeRepository.findById(workplaceDTO.getEmployeeId());
             if (employeeOptional.isEmpty()) {
-                return ServiceResponse.error("Employee not found"); // Handle the case where the employee doesn't exist
+                return ServiceResponse.error("Employee not found"); 
             }
             Employee employee = employeeOptional.get();
-            // Map DTO to Entity
             Workplace workplace = new Workplace();
             workplace.setWorkplaceName(workplaceDTO.getWorkplaceName());
             workplace.setHourlyWage(workplaceDTO.getHourlyWage());
