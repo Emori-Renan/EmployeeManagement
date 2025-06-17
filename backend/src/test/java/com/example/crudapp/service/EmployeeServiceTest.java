@@ -5,10 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.repository.CrudRepository;
 
+import com.example.crudapp.dto.EmployeeDTO;
 import com.example.crudapp.dto.EmployeeRegistrationDTO;
 import com.example.crudapp.dto.ServiceResponse;
 import com.example.crudapp.model.Employee;
@@ -17,7 +16,6 @@ import com.example.crudapp.repository.EmployeeRepository;
 import com.example.crudapp.repository.UserLoginRepository;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
@@ -110,10 +108,10 @@ class EmployeeServiceTest {
         assertEquals("Employee registered successfully", response.getMessage());
         assertNotNull(response.getData());
 
-        Employee returnedEmployee = (Employee) response.getData();
+        EmployeeDTO returnedEmployee = (EmployeeDTO) response.getData();
         assertEquals("John Doe", returnedEmployee.getEmployeeName());
         assertEquals("employee", returnedEmployee.getRole());
-        assertEquals(1L, returnedEmployee.getUserLogin().getId());
+        assertEquals(1L, returnedEmployee.getId());
 
         // Verify repository interactions
         verify(userLoginRepository, times(1)).findByUsername("abc");

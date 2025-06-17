@@ -17,6 +17,7 @@ import com.example.crudapp.dto.UserRegistrationResult;
 import com.example.crudapp.service.AuthService;
 import com.example.crudapp.service.UserLoginService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 
 @RestController
@@ -24,17 +25,21 @@ import jakarta.validation.Valid;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    private UserLoginService userLoginService;
+    private final UserLoginService userLoginService;
+    private final AuthService authService;
 
-    @Autowired
-    private AuthService authService;
+    public AuthController(UserLoginService userLoginService, AuthService authService) {
+        this.userLoginService = userLoginService;
+        this.authService = authService;
+    }
 
+    @Operation(summary = "Login User", description = "Authenticates a user and returns a JWT token.")
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody UserLoginRequestDTO request) {
         return authService.authenticate(request.getUsernameOrEmail(), request.getPassword());
     }
 
+    @Operation(summary = "Register User", description = "Registers a new user with a username, email, password, and role.")
     @PostMapping("/register")
     public ResponseEntity<UserRegistrationResult> register(
             @RequestBody @Valid UserRegistrationDTO request, BindingResult result) {

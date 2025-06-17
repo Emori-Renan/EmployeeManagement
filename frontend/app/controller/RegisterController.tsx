@@ -1,4 +1,5 @@
 import axios from "axios";
+import { UserResponse } from "../types/userResponse";
 
 interface RegisterPayload {
     email: string;
@@ -8,14 +9,14 @@ interface RegisterPayload {
 }
 
 
-export const register = async (payload: RegisterPayload) => {
+export const register = async (payload: RegisterPayload):Promise<UserResponse> => {
     try {
-        const response = await axios.post<{success: boolean; message: string}>("http://localhost:8080/auth/register", payload);
-        return response.data;
+        const response = await axios.post<UserResponse>("http://localhost:8080/auth/register", payload);
+            return response.data;
     } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
           if (error.response) {
-            const message = error.response.data?.message || "An error occurred. Please try again.";
+            const message = error.response.data?.message ?? "An error occurred. Please try again.";
             return { success: false, message };
           } 
           else if (error.request) {

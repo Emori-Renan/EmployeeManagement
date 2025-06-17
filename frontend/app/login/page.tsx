@@ -9,6 +9,7 @@ import { loginSuccess } from "../store/authSlice";
 import { saveToken, saveUsername } from "../utils/auth";
 import { delay } from "../utils/functions";
 import { useToast } from "../context/ToastContext";
+import { AuthResponse } from "../types/userResponse";
 
 
 
@@ -54,9 +55,13 @@ export default function LoginPage() {
             const { searchParams } = new URL(window.location.href);
             const redirectPath = searchParams.get("redirect") ?? "/";
             setIsLoading(true);
-            const data = await login({ usernameOrEmail: username, password: password });
+            const data:AuthResponse = await login({ usernameOrEmail: username, password: password });
             if (data instanceof AuthError) {
                 throw data;
+            }
+            if (!data?.token) {
+                showToast("Login failed, try again.", "error");
+                return;
             }
             const token = data.token ?? ''
             dispatch(loginSuccess(token));
@@ -103,40 +108,83 @@ export default function LoginPage() {
                 </div>
                 <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
                     <form className="card-body gap-0" onSubmit={handleSubmit}>
-                        <label className={`input input-bordered flex items-center
-                             ${usernameError ? ' input-error w-full max-w-xs' : 'mb-3'}`}>
+                        <label
+                            htmlFor="username"
+                            className={`input input-bordered flex items-center
+                             ${usernameError ? ' input-error w-full max-w-xs' : 'mb-3'}`}
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 16 16"
                                 fill="currentColor"
-                                className="h-4 w-4 opacity-70">
+                                className="h-4 w-4 opacity-70"
+                                aria-hidden="true"
+                            >
                                 <path
-                                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
+                                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z"
+                                />
                             </svg>
-                            <input type="text" className="grow" placeholder="Username" name="username"
+                            <span className="sr-only">Username</span>
+                            <input
+                                id="username"
+                                type="text"
+                                className="grow"
+                                placeholder="Username"
+                                name="username"
                                 value={username}
-                                onChange={(e) => setUsername(e.target.value)} />
+                                onChange={(e) => setUsername(e.target.value)}
+                                aria-label="Username"
+                                aria-invalid={usernameError}
+                                aria-describedby={usernameError ? "username-error" : undefined}
+                            />
                         </label>
+                        {usernameError &&
+                            <div className="label p-0 p-2 pt-0">
+                                <span
+                                    id="username-error"
+                                    className="label-text-alt text-error"
+                                    role="alert"
+                                >
+                                    {error}
+                                </span>
+                            </div>
+                        }
                         {usernameError &&
                             <div className="label p-0 p-2 pt-0">
                                 <span className="label-text-alt text-error">{error}</span>
                             </div>
                         }
-                        <label className={`input input-bordered flex items-center
-                             ${passwordError ? ' input-error w-full max-w-xs' : ''}`}>
+                        <label
+                            htmlFor="password"
+                            className={`input input-bordered flex items-center
+                             ${passwordError ? ' input-error w-full max-w-xs' : ''}`}
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 16 16"
                                 fill="currentColor"
-                                className="h-4 w-4 opacity-70">
+                                className="h-4 w-4 opacity-70"
+                                aria-hidden="true"
+                            >
                                 <path
                                     fillRule="evenodd"
                                     d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                                    clipRule="evenodd" />
+                                    clipRule="evenodd"
+                                />
                             </svg>
-                            <input type="password" className="grow" placeholder="Password" name="password"
+                            <span className="sr-only">Password</span>
+                            <input
+                                id="password"
+                                type="password"
+                                className="grow"
+                                placeholder="Password"
+                                name="password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)} />
+                                onChange={(e) => setPassword(e.target.value)}
+                                aria-label="Password"
+                                aria-invalid={passwordError}
+                                aria-describedby={passwordError ? "password-error" : undefined}
+                            />
                         </label>
                         {passwordError &&
                             <div className="label pt-0">

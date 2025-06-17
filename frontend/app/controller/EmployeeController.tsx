@@ -3,6 +3,7 @@ import { ApiError } from "../errors/ApiError";
 import { handleApiError } from "../errors/handleApiError";
 import { AxiosError } from "axios";
 import { AuthError } from "../errors/AuthError";
+import { handleException } from "../errors/errorHandler";
 
 interface RegisterPayload {
   employeeName: string;
@@ -50,9 +51,7 @@ export const getEmployeeById = async (id: string) => {
     );
     return { success: true, data: response.data.data };
   } catch (error: unknown) {
-    const message = handleApiError(error);
-    const status = (error as AxiosError).response?.status;
-    throw new AuthError(message, status);
+    handleException(error);
   }
 }
 
@@ -65,8 +64,6 @@ export const updateEmployee = async (id: string, payload: RegisterPayload) => {
     );
     return response.data;
   } catch (error: unknown) {
-    const message = handleApiError(error);
-    const status = (error as AxiosError).response?.status;
-    throw new AuthError(message, status);
+    handleException(error);
   }
 }
