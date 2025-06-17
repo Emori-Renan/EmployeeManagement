@@ -24,7 +24,7 @@ export const workdayRegistration = async (
       return { success: false, message: "Authentication token not found." };
     }
 
-    const response = await apiClient.post<ServiceResponse<any>>(
+    const response = await apiClient.post<ServiceResponse<void>>(
       "/workday/register",
       workdayData,
       {
@@ -36,14 +36,27 @@ export const workdayRegistration = async (
     );
 
     return response.data;
-  } catch (error: any) {
-    if (error.response) {
-      const message = error.response.data?.message || "An error occurred. Please try again.";
+  } catch (error: unknown) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      (error as { response?: unknown }).response
+    ) {
+      const err = error as { response?: { data?: { message?: string } } };
+      const message = err.response?.data?.message || "An error occurred. Please try again.";
       return { success: false, message };
-    } else if (error.request) {
+    } else if (
+      typeof error === "object" &&
+      error !== null &&
+      "request" in error &&
+      (error as { request?: unknown }).request
+    ) {
       return { success: false, message: "Network error, please check your connection." };
-    } else {
+    } else if (error instanceof Error) {
       return { success: false, message: "An unexpected error occurred: " + error.message };
+    } else {
+      return { success: false, message: "An unexpected error occurred." };
     }
   }
 };
@@ -72,14 +85,27 @@ export const fetchWorkplacesByEmployeeId = async (employeeId: number): Promise<S
     );
 
     return response.data;
-  } catch (error: any) {
-    if (error.response) {
-      const message = error.response.data?.message || "Failed to fetch workplaces.";
+  } catch (error: unknown) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      (error as { response?: { data?: { message?: string } } }).response
+    ) {
+      const err = error as { response?: { data?: { message?: string } } };
+      const message = err.response?.data?.message || "Failed to fetch workplaces.";
       return { success: false, message };
-    } else if (error.request) {
+    } else if (
+      typeof error === "object" &&
+      error !== null &&
+      "request" in error &&
+      (error as { request?: unknown }).request
+    ) {
       return { success: false, message: "Network error while fetching workplaces." };
-    } else {
+    } else if (error instanceof Error) {
       return { success: false, message: "An unexpected error occurred while fetching workplaces: " + error.message };
+    } else {
+      return { success: false, message: "An unexpected error occurred while fetching workplaces." };
     }
   }
 };
@@ -127,14 +153,37 @@ export const getWorkdaysByEmployeeAndFilters = async (
     });
 
     return response.data;
-  } catch (error: any) {
-    if (error.response) {
-      const message = error.response.data?.message || "Failed to retrieve workdays.";
+  } catch (error: unknown) {
+    interface ApiError {
+      response?: {
+        data?: {
+          message?: string;
+        };
+      };
+      request?: unknown;
+      message?: string;
+    }
+    const apiError = error as ApiError;
+
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      apiError.response
+    ) {
+      const message = apiError.response.data?.message || "Failed to retrieve workdays.";
       return { success: false, message };
-    } else if (error.request) {
+    } else if (
+      typeof error === "object" &&
+      error !== null &&
+      "request" in error &&
+      apiError.request
+    ) {
       return { success: false, message: "Network error, please check your connection." };
-    } else {
+    } else if (error instanceof Error) {
       return { success: false, message: "An unexpected error occurred: " + error.message };
+    } else {
+      return { success: false, message: "An unexpected error occurred." };
     }
   }
 };
@@ -194,21 +243,47 @@ export const downloadWorkdayReport = async (
 
     return { success: true, message: "Workday report downloaded successfully!" };
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error downloading workday report:", error);
-    if (error.response) {
+
+    interface ApiError {
+      response?: {
+        data: {
+          text: () => Promise<string>;
+          message?: string;
+        };
+      };
+      request?: unknown;
+      message?: string;
+    }
+
+    const apiError = error as ApiError;
+
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      apiError.response
+    ) {
       try {
-        const errorData = JSON.parse(await error.response.data.text());
+        const errorData = JSON.parse(await apiError.response.data.text());
         const message = errorData.message || "Failed to download report.";
         return { success: false, message };
-      } catch (parseError) {
-        const message = error.response.data?.message || "Failed to download report. Server responded with an error.";
+      } catch {
+        const message = apiError.response.data?.message || "Failed to download report. Server responded with an error.";
         return { success: false, message };
       }
-    } else if (error.request) {
+    } else if (
+      typeof error === "object" &&
+      error !== null &&
+      "request" in error &&
+      apiError.request
+    ) {
       return { success: false, message: "Network error, please check your connection." };
-    } else {
+    } else if (error instanceof Error) {
       return { success: false, message: "An unexpected error occurred: " + error.message };
+    } else {
+      return { success: false, message: "An unexpected error occurred." };
     }
   }
 };

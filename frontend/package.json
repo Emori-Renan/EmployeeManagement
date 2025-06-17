@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next export" 
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.0",
@@ -18,7 +19,6 @@
     "react-redux": "^9.2.0"
   },
   "devDependencies": {
-    "@types/axios": "^0.9.36",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

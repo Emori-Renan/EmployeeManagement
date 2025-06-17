@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import LoadingModal from "../components/Loading";
 import withAuth from "../store/withAuth";
 import { getEmployees } from "../controller/EmployeeController";
@@ -7,10 +7,11 @@ import { getUsernameFromToken } from "../utils/auth";
 import { useToast } from "../context/ToastContext";
 import { useRouter } from 'next/navigation'
 
-interface Employee {
-    id: number;
-    employeeName: string;
-    role: string;
+interface Employee  {
+    id: string;
+  employeeName: string;
+  role: string;
+  username: string;
 }
 
 
@@ -20,32 +21,31 @@ const EmployeeList = () => {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [loginName, setLoginName] = useState("");
 
-    useEffect(() => {
-        const name = getUsernameFromToken();
-        if (name) {
-            setLoginName(name);
-            fetchEmployees(name);
-        }
-    }, []);
-
-    const fetchEmployees = async (username: string) => {
+    const fetchEmployees = useCallback(async (username: string) => {
         setIsLoading(true);
         setError(null);
         try {
             const response = await getEmployees(username);
             if (!response.success) {
                 throw new Error(response.message);
-            }
-            setEmployees(response.data);
-        } catch (err: any) {
+            } 
+            setEmployees(response.data ?? []);
+
+        } catch  {
             setError("Failed to load employees");
             showToast("Failed to load employees", "error");
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [showToast]);
+
+    useEffect(() => {
+        const name = getUsernameFromToken();
+        if (name) {
+            fetchEmployees(name);
+        }
+    }, [fetchEmployees]);
 
     return (
         <div className="hero bg-base-200 min-h-screen">

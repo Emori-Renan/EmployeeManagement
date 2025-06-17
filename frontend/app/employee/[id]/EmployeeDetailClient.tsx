@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { workplaceRegistration } from "@/app/controller/WorkplaceController";
 import WorkdayRegistrationModal from "@/app/components/WorkdayRegistrationModal";
@@ -75,7 +75,8 @@ export default function EmployeeDetailClient() {
   };
 
 
-  const fetchEmployeeDetails = async () => {
+
+  const fetchEmployeeDetails = useCallback(async () => {
     if (!id || typeof id !== "string") return;
 
     const token = localStorage.getItem("token");
@@ -101,20 +102,23 @@ export default function EmployeeDetailClient() {
       } else {
         setError(response.data.message || "Error fetching employee");
       }
-    } catch (err: any) {
-      if (err.response) {
-        setError(err.response.data?.message || "Error fetching employee details.");
-      } else if (err.request) {
+    } catch (err: unknown) {
+      if (typeof err === "object" && err !== null && "response" in err) {
+        const errorWithResponse = err as { response?: { data?: { message?: string } } };
+        setError(errorWithResponse.response?.data?.message || "Error fetching employee details.");
+      } else if (typeof err === "object" && err !== null && "request" in err) {
         setError("Network error while fetching employee details.");
-      } else {
+      } else if (err instanceof Error) {
         setError("An unexpected error occurred: " + err.message);
+      } else {
+        setError("An unexpected error occurred.");
       }
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchEmployeeDetails();
-  }, [id]);
+  }, [fetchEmployeeDetails]);
 
   if (error) return <div className="text-red-500">Error: {error}</div>;
   if (!employee) return <div>Loading...</div>;

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React from 'react';
 
 interface LoadingModalProps {
@@ -22,7 +23,9 @@ const LoadingModal: React.FC<LoadingModalProps> = ({ isLoading, message }) => {
                     <span className="loading loading-ring w-[3.5rem] h-[3.5rem]"></span>
                 </div>
                     <div className='flex justify-center'>
-                        <img className="w-[10rem] h-[10rem] mx-auto"
+                        <Image className="w-[10rem] h-[10rem] mx-auto"
+                        width={100}
+                        height={100}
                             src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3RkcWF1N2EyM2dhZWhlZXpud2o3YWttdTRibjRzMzg4eml5NXFsMCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xckpvtJhGi3TpQKRrW/giphy.webp" alt="Loading" />
                     </div>
                 <div className="modal-action">

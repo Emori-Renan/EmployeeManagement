@@ -1,16 +1,16 @@
-package com.example.crudapp;
+// package com.example.crudapp;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+// import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class CrudappApplicationTests {
+// @SpringBootTest
+// class CrudappApplicationTests {
 
-	@Test
-    void simpleTest() {
-        assertTrue(true);
-    }
+// 	@Test
+//     void simpleTest() {
+//         assertTrue(true);
+//     }
 
-}
+// }

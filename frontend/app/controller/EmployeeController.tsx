@@ -1,4 +1,8 @@
 import apiClient from "../utils/apiClient";
+import { ApiError } from "../errors/ApiError";
+import { handleApiError } from "../errors/handleApiError";
+import { AxiosError } from "axios";
+import { AuthError } from "../errors/AuthError";
 
 interface RegisterPayload {
   employeeName: string;
@@ -6,26 +10,21 @@ interface RegisterPayload {
   username: string;
 }
 
-export const registerEmployee = async (payload: RegisterPayload) => {
+type RegisterResponse = { success: boolean; message: string } | ApiError;
+
+export const registerEmployee = async (payload: RegisterPayload):Promise<RegisterResponse> => {
   try {
     const response = await apiClient.post<{ success: boolean; message: string }>("/employee/register", payload, { withCredentials: true });
     return response.data;
   } catch (error: unknown) {
-    if (typeof error === "object" && error !== null && "response" in error) {
-      const err = error as { response: { data?: { message?: string } } };
-      const message = err.response.data?.message || "An error occurred. Please try again.";
-      return { success: false, message };
-    }
-    else if (typeof error === "object" && error !== null && "request" in error) {
-      return { success: false, message: "Network error, please check your connection." };
-    }
-    else {
-      return { success: false, message: "An unexpected error occurred." + error };
-    }
+    const message = handleApiError(error);
+    const status = (error as AxiosError).response?.status;
+    throw new AuthError(message, status);
   }
 }
 
 interface Employee  {
+  id: string;
   employeeName: string;
   role: string;
   username: string;
@@ -38,17 +37,8 @@ export const getEmployees = async (username: string) => {
       { withCredentials: true }
     );
     return { success: true, data: response.data.data };
-  } catch (error: any) {
-    if (error.response) {
-      const message = error.response.data?.message || "An error occurred. Please try again.";
-      return { success: false, message };
-    }
-    else if (error.request) {
-      return { success: false, message: "Network error, please check your connection." };
-    }
-    else {
-      return { success: false, message: "An unexpected error occurred." + error };
-    }
+  } catch (error: unknown) {
+    return { success: false, message: handleApiError(error) };
   }
 }
 
@@ -59,17 +49,10 @@ export const getEmployeeById = async (id: string) => {
       { withCredentials: true }
     );
     return { success: true, data: response.data.data };
-  } catch (error: any) {
-    if (error.response) {
-      const message = error.response.data?.message || "An error occurred. Please try again.";
-      return { success: false, message };
-    }
-    else if (error.request) {
-      return { success: false, message: "Network error, please check your connection." };
-    }
-    else {
-      return { success: false, message: "An unexpected error occurred." + error };
-    }
+  } catch (error: unknown) {
+    const message = handleApiError(error);
+    const status = (error as AxiosError).response?.status;
+    throw new AuthError(message, status);
   }
 }
 
@@ -81,16 +64,9 @@ export const updateEmployee = async (id: string, payload: RegisterPayload) => {
       { withCredentials: true }
     );
     return response.data;
-  } catch (error: any) {
-    if (error.response) {
-      const message = error.response.data?.message || "An error occurred. Please try again.";
-      return { success: false, message };
-    }
-    else if (error.request) {
-      return { success: false, message: "Network error, please check your connection." };
-    }
-    else {
-      return { success: false, message: "An unexpected error occurred." + error };
-    }
+  } catch (error: unknown) {
+    const message = handleApiError(error);
+    const status = (error as AxiosError).response?.status;
+    throw new AuthError(message, status);
   }
 }

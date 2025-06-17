@@ -26,14 +26,15 @@ export const workplaceRegistration = async (workplace: Workplace) => {
     );
 
     return response.data;
-  } catch (error: any) {
-    if (error.response) {
-      const message = error.response.data?.message || "An error occurred. Please try again.";
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const err = error as { response: { data?: { message?: string } } };
+      const message = err.response.data?.message || "An error occurred. Please try again.";
       return { success: false, message };
-    } else if (error.request) {
+    } else if (error && typeof error === "object" && "request" in error) {
       return { success: false, message: "Network error, please check your connection." };
     } else {
-      return { success: false, message: "An unexpected error occurred." + error };
+      return { success: false, message: "An unexpected error occurred." + String(error) };
     }
   }
 }

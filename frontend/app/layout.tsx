@@ -34,7 +34,7 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
     if (username) {
       dispatch(setUsername(username)); 
     }
-  }, [dispatch]);
+  }, [dispatch, showToast]);
 
   useEffect(() => {
     const token = getToken();
@@ -48,7 +48,7 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
         showToast("Session expired. Log in again.", "info");
       }
     } 
-  }, [dispatch]);
+  }, [dispatch, showToast]);
 
   return (
     <html lang="en" data-theme="cupcake">

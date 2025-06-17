@@ -10,9 +10,9 @@ interface WorkplaceOption {
 }
 
 interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-  employeeId: number; 
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly employeeId: number; 
 }
 
 export default function WorkdayReportDownloadModal({
@@ -96,7 +96,7 @@ export default function WorkdayReportDownloadModal({
       } else {
         showToast(result.message || "Failed to download report.", "error");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error during report download:", error);
       showToast("An unexpected error occurred during report download.", "error");
     } finally {

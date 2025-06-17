@@ -36,9 +36,14 @@ public class EmployeeService {
             Employee employee = new Employee();
             employee.setEmployeeName(employeeDTO.getEmployeeName());
             employee.setRole(employeeDTO.getRole());
-            employee.setUserLogin(userLogin);
+            employee.setUserLogin(userLogin);   
             Employee savedEmployee = employeeRepository.save(employee);
-            return ServiceResponse.success("Employee registered successfully", savedEmployee);
+            EmployeeDTO responseSavedEmployee = new EmployeeDTO(
+                    savedEmployee.getId(),
+                    savedEmployee.getEmployeeName(),
+                    savedEmployee.getRole()
+            );
+            return ServiceResponse.success("Employee registered successfully", responseSavedEmployee);
         } catch (Exception e) {
             return ServiceResponse.error("An error occurred while registering the employee: " + e.getMessage());
         }

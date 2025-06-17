@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import LoadingModal from "../components/Loading";
 import { delay } from "../utils/functions";
 import { useDispatch } from "react-redux";
-import { saveToken } from "../utils/auth";
+import { saveToken, saveUsername } from "../utils/auth";
 import { loginSuccess } from "../store/authSlice";
 import { login } from "../controller/LoginController";
 
@@ -55,28 +55,32 @@ export default function RegisterPage() {
             const token = data.token ?? ''
             dispatch(loginSuccess(token));
             saveToken(token);
+            saveUsername(username);
             await delay(3000);
 
             router.push("/");
             return;
 
-        } catch (err: any) {
-            
-            if(err == "Error: Email already exists."){
-                setError(err.message);
-                setEmailError(true);
-            }
-
-            if(err == "Error: Username already exists."){
-                setError(err.message);
-                setUsernameError(true);
-            }
-
-            if (err.statusCode === 404) {
-                setUsernameError(true);
-                setError("User not found");
+        } catch (err: unknown) {
+            if (typeof err === "string") {
+                if (err === "Error: Email already exists.") {
+                    setError(err);
+                    setEmailError(true);
+                } else if (err === "Error: Username already exists.") {
+                    setError(err);
+                    setUsernameError(true);
+                } else {
+                    throw new AuthError("An unexpected error occurred sifudeu" + err, 500);
+                }
+            } else if (err instanceof Error) {
+                if (typeof (err as object) === "object" && err !== null && "statusCode" in err && (err as { statusCode?: number }).statusCode === 404) {
+                    setUsernameError(true);
+                    setError("User not found");
+                } else {
+                    setError(err.message);
+                }
             } else {
-                throw new AuthError("An unexpected error occurred sifudeu" + err, 500);
+                throw new AuthError("An unexpected error occurred sifudeu" + String(err), 500);
             }
         } finally {
                 setIsLoading(false);

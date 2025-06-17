@@ -1,5 +1,8 @@
 import axios from "axios";
 import { AuthError } from "../errors/AuthError";
+import { handleApiError } from "../errors/handleApiError";
+import type { AxiosError } from "axios";
+
 
 interface LoginPayload {
     usernameOrEmail: string;
@@ -11,7 +14,7 @@ interface LoginResponse {
     message: string; 
 }
 
-export const login = async (payload: LoginPayload) => {
+export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
 
     try {
         const response = await axios.post<LoginResponse>("http://localhost:8080/auth/login", payload);
@@ -22,16 +25,10 @@ export const login = async (payload: LoginPayload) => {
         } else {
             throw new AuthError("Login failed", response.status);
         }
-    } catch (error: any) {
-        console.log("olha o erro ai", error.response.status);
-
-        if (error.response.status === 404) {
-            return new AuthError("User not found", 404);
-        } else if (error.response.status === 401) {
-            return new AuthError("Invalid credentials", 401);
-        } else {
-            return new AuthError("An unexpected error occurred", 500);
-        }
+    } catch (error: unknown) {
+        const message = handleApiError(error);
+        const status = (error as AxiosError).response?.status;
+        throw new AuthError(message, status);
 
     }
 };

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import LoadingModal from "../components/Loading";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../store/authSlice";
-import { saveToken } from "../utils/auth";
+import { saveToken, saveUsername } from "../utils/auth";
 import { delay } from "../utils/functions";
 import { useToast } from "../context/ToastContext";
 
@@ -45,14 +45,14 @@ export default function LoginPage() {
         return true;
     }
 
-    const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent): Promise<void> => {
         e.preventDefault();
         if (!validateForm()) {
             return;
         }
         try {
             const { searchParams } = new URL(window.location.href);
-            const redirectPath = searchParams.get("redirect") || "/";
+            const redirectPath = searchParams.get("redirect") ?? "/";
             setIsLoading(true);
             const data = await login({ usernameOrEmail: username, password: password });
             if (data instanceof AuthError) {
@@ -61,24 +61,29 @@ export default function LoginPage() {
             const token = data.token ?? ''
             dispatch(loginSuccess(token));
             saveToken(token);
+            saveUsername(username);
             await delay(3000);
             router.push(redirectPath);
             showToast("User logged in successfully!", "success");
             return;
-        } catch (err: any) {
-            console.log("deu erro ai patrao ", err.statusCode);
-
+        } catch (err: unknown) {
             setUsernameError(false);
             setPasswordError(false);
             setError(null);
 
-            if (err.statusCode === 404) {
-                setUsernameError(true);
-                setError("User not found");
-            } else if (err.statusCode === 401) {
-                setPasswordError(true);
-                setError("Invalid credentials");
+            if (typeof err === "object" && err !== null && "statusCode" in err) {
+                const statusCode = (err as { statusCode?: number }).statusCode;
+                if (statusCode === 404) {
+                    setUsernameError(true);
+                    setError("User not found");
+                } else if (statusCode === 401) {
+                    setPasswordError(true);
+                    setError("Invalid credentials");
+                } else {
+                    throw new AuthError("An unexpected error occurred", 500);
+                }
             } else {
+                console.error("Unexpected error:", err);
                 throw new AuthError("An unexpected error occurred", 500);
             }
         } finally {
