@@ -5,6 +5,7 @@ import {  useRouter } from "next/navigation";
 import {  registerEmployee } from "@/app/controller/EmployeeController";
 import LoadingModal from "@/app/components/Loading";
 import { useToast } from "@/app/context/ToastContext";
+import { getUsernameFromToken } from "../utils/auth";
 
 const EmployeeDetail = () => {
     const router = useRouter();
@@ -16,14 +17,12 @@ const EmployeeDetail = () => {
     const handleSave = async () => {
         setIsLoading(true);
         try {
-            const usernameLoggedIn = localStorage.getItem("username");
+            const usernameLoggedIn = getUsernameFromToken();
             if (!usernameLoggedIn) {
                 showToast("You must be logged in to create an employee", "error");
                 return;
             }
-            if (typeof usernameLoggedIn === "string"){
-                await registerEmployee({ username: usernameLoggedIn, role: "employee", employeeName: employeeName });
-            }
+            await registerEmployee({ username: usernameLoggedIn, role: "employee", employeeName: employeeName });
             showToast("Employee created!", "success");
             router.push("/employeeslist");
         } catch  {

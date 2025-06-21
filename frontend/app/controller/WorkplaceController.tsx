@@ -1,13 +1,14 @@
+import { handleApiError } from "../errors/handleApiError";
 import apiClient from "../utils/apiClient";
 
 
-interface Workplace {
+interface WorkplaceRegister {
   workplaceName: string;
     hourlyWage: number;
     overtimeMultiplier: number;
 }
 
-export const workplaceRegistration = async (workplace: Workplace) => {
+export const workplaceRegistration = async (workplace: WorkplaceRegister) => {
   try {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -18,23 +19,13 @@ export const workplaceRegistration = async (workplace: Workplace) => {
       "/workplace/register",
       workplace,
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         withCredentials: true,
       }
     );
 
     return response.data;
   } catch (error: unknown) {
-    if (error && typeof error === "object" && "response" in error) {
-      const err = error as { response: { data?: { message?: string } } };
-      const message = err.response.data?.message || "An error occurred. Please try again.";
-      return { success: false, message };
-    } else if (error && typeof error === "object" && "request" in error) {
-      return { success: false, message: "Network error, please check your connection." };
-    } else {
-      return { success: false, message: "An unexpected error occurred." + String(error) };
-    }
+    const errorMessage = handleApiError(error);
+    return { success: false, message: errorMessage };
   }
 }

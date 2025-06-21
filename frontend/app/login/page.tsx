@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import LoadingModal from "../components/Loading";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../store/authSlice";
-import { saveToken, saveUsername } from "../utils/auth";
+import { saveToken } from "../utils/auth";
 import { delay } from "../utils/functions";
 import { useToast } from "../context/ToastContext";
 import { AuthResponse } from "../types/userResponse";
@@ -66,7 +66,6 @@ export default function LoginPage() {
             const token = data.token ?? ''
             dispatch(loginSuccess(token));
             saveToken(token);
-            saveUsername(username);
             await delay(3000);
             router.push(redirectPath);
             showToast("User logged in successfully!", "success");

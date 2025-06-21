@@ -101,7 +101,7 @@ export default function WorkdayRegistrationModal({
       setOvertimeHours("");
       setTransportCost("");
     } else {
-      setError(response.message || "Error registering workday.");
+      setError(response.message ?? "Error registering workday.");
     }
   };
 

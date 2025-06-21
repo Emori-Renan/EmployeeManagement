@@ -2,12 +2,7 @@
 
 import React, { FormEvent } from "react";
 import { useToast } from "../context/ToastContext";
-type Workplace = {
-  workplaceName: string;
-  hourlyWage: number;
-  overtimeMultiplier: number;
-  employeeId: number;
-};
+import { Workplace } from "../types/workplaceResponse";
 
 interface Props {
   isOpen: boolean;
@@ -22,7 +17,7 @@ export default function WorkplaceRegistrationModal({
   onClose,
   onRegister,
   employeeId,
-}: Props) {
+}: Readonly<Props>) {
   const { showToast } = useToast();
 
   if (!isOpen) return null;

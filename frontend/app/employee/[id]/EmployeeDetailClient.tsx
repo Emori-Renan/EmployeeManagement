@@ -5,21 +5,16 @@ import { useParams } from "next/navigation";
 import { workplaceRegistration } from "@/app/controller/WorkplaceController";
 import WorkdayRegistrationModal from "@/app/components/WorkdayRegistrationModal";
 import WorkdayViewerModal from "@/app/components/WorkdayViewerModal";
-import apiClient from "@/app/utils/apiClient";
 import WorkplaceRegistrationModal from "@/app/components/WorkplaceRegistrationModal";
 import { useToast } from "@/app/context/ToastContext";
 import WorkdayReportDownloadModal from "@/app/components/WorkdayReportModal";
+import { handleException } from "@/app/errors/errorHandler";
+import { getEmployeeById } from "@/app/controller/EmployeeController";
+import { Workplace } from "@/app/types/workplaceResponse";
 
 interface Employee {
   employeeName: string;
   id: number;
-}
-
-interface Workplace {
-  workplaceName: string;
-  hourlyWage: number;
-  overtimeMultiplier: number;
-  employeeId: number;
 }
 
 export default function EmployeeDetailClient() {
@@ -45,7 +40,7 @@ export default function EmployeeDetailClient() {
   const handleRegisterWorkplace = async (workplace: Workplace) => {
     const response = await workplaceRegistration(workplace);
     if (!response.success) {
-      setError(response.message || "Error registering workplace");
+      setError(response.message ?? "Error registering workplace");
       return;
     }
 
@@ -73,48 +68,28 @@ export default function EmployeeDetailClient() {
   const closeWorkdayViewerModal = () => {
     setIsWorkdayViewerModalOpen(false);
   };
-
-
-
+  
   const fetchEmployeeDetails = useCallback(async () => {
     if (!id || typeof id !== "string") return;
-
     const token = localStorage.getItem("token");
     if (!token) {
       setError("No token found");
       return;
     }
-
     setError("");
     try {
-      const response = await apiClient.get<{ success: boolean; message?: string; data: Employee }>(
-        `/employee/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await getEmployeeById(id);
 
-      if (response.data.success) {
-        setEmployee(response.data.data);
+      if (response.success) {
+        setEmployee(response.data);
       } else {
-        setError(response.data.message || "Error fetching employee");
+        setError(response.message ?? "Error fetching employee");
       }
     } catch (err: unknown) {
-      if (typeof err === "object" && err !== null && "response" in err) {
-        const errorWithResponse = err as { response?: { data?: { message?: string } } };
-        setError(errorWithResponse.response?.data?.message || "Error fetching employee details.");
-      } else if (typeof err === "object" && err !== null && "request" in err) {
-        setError("Network error while fetching employee details.");
-      } else if (err instanceof Error) {
-        setError("An unexpected error occurred: " + err.message);
-      } else {
-        setError("An unexpected error occurred.");
-      }
+      handleException(err);
+      showToast("An unexpected error occurred while fetching employee details.", "error");
     }
-  }, [id]);
+  }, [id, showToast]);
 
   useEffect(() => {
     fetchEmployeeDetails();
@@ -154,7 +129,7 @@ export default function EmployeeDetailClient() {
         />
       )}
 
-      {employee.id && (
+      {!!employee.id && (
         <WorkdayRegistrationModal
           isOpen={isWorkdayRegistrationModalOpen}
           onClose={closeWorkdayRegistrationModal}

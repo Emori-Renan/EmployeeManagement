@@ -4,6 +4,7 @@ import { handleApiError } from "../errors/handleApiError";
 import { AxiosError } from "axios";
 import { AuthError } from "../errors/AuthError";
 import { handleException } from "../errors/errorHandler";
+import { EmployeeResponse } from "../types/employeeResponse";
 
 interface RegisterPayload {
   employeeName: string;
@@ -43,15 +44,25 @@ export const getEmployees = async (username: string) => {
   }
 }
 
-export const getEmployeeById = async (id: string) => {
+export const getEmployeeById = async (id: string):Promise<EmployeeResponse> => {
   try {
-    const response = await apiClient.get<{ success: boolean; data: Employee; message?: string }>(
+    const response = await apiClient.get<EmployeeResponse>(
       `/employee/${id}`,
       { withCredentials: true }
     );
-    return { success: true, data: response.data.data };
+    if (!response.data.success) {
+          return {
+      success: false,
+      message: "Failed to fetch employee details"
+    };
+    }
+    return response.data;
   } catch (error: unknown) {
-    handleException(error);
+    const message = handleApiError(error);
+    return {
+      success: false,
+      message: message
+    };
   }
 }
 

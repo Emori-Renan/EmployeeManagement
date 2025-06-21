@@ -6,9 +6,9 @@ import {
 } from "@/app/controller/WorkdayController";
 
 interface WorkdayViewerModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  employeeId: number;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly employeeId: number;
 }
 
 interface WorkdayDisplayData {
@@ -146,8 +146,11 @@ export default function WorkdayViewerModal({
                 className="select select-bordered w-full"
                 value={filters.workplaceId}
                 onChange={handleFilterChange}
+                disabled={workplaces.length === 0} 
               >
-                <option value="">All Workplaces</option>
+                <option value="" >
+                  {workplaces.length === 0 ? "No workplaces available" : "All Workplaces"}
+                </option>
                 {workplaces.map((wp) => (
                   <option key={wp.id} value={wp.id}>
                     {wp.workplaceName}
@@ -161,7 +164,7 @@ export default function WorkdayViewerModal({
             <button
               className="btn btn-primary"
               onClick={fetchWorkdays}
-              disabled={isLoading}
+              disabled={isLoading || workplaces.length === 0}
             >
               {isLoading ? "Searching..." : "Search Workdays"}
             </button>

@@ -4,16 +4,8 @@ export const saveToken = (token: string):void => {
     localStorage.setItem('token', token);
 };
 
-export const saveUsername = (username: string):void => {
-    localStorage.setItem('username', username);
-};
-
 export const getToken = () => {
     return localStorage.getItem('token');
-};
-
-export const getUsername = () => {
-    return localStorage.getItem('username');
 };
 
 export const clearToken = () => {

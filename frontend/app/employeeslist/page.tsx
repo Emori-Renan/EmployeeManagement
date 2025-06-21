@@ -31,9 +31,7 @@ const EmployeeList = () => {
                 throw new Error(response.message);
             } 
             setEmployees(response.data ?? []);
-
         } catch  {
-            setError("Failed to load employees");
             showToast("Failed to load employees", "error");
         } finally {
             setIsLoading(false);

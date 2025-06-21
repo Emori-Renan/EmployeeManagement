@@ -1,3 +1,4 @@
+import { ApiResponse } from "../types/generalResponse";
 import apiClient from "../utils/apiClient"; 
 
 interface WorkdayRegistrationData {
@@ -17,22 +18,16 @@ interface ServiceResponse<T> {
 
 export const workdayRegistration = async (
   workdayData: WorkdayRegistrationData
-): Promise<ServiceResponse<void>> => {
+): Promise<ApiResponse<void>> => {
   try {
     const token = localStorage.getItem("token");
     if (!token) {
       return { success: false, message: "Authentication token not found." };
     }
-
-    const response = await apiClient.post<ServiceResponse<void>>(
+    const response = await apiClient.post<ApiResponse<void>>(
       "/workday/register",
       workdayData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      }
+      { withCredentials: true }
     );
 
     return response.data;
@@ -44,7 +39,7 @@ export const workdayRegistration = async (
       (error as { response?: unknown }).response
     ) {
       const err = error as { response?: { data?: { message?: string } } };
-      const message = err.response?.data?.message || "An error occurred. Please try again.";
+      const message = err.response?.data?.message ?? "An error occurred. Please try again.";
       return { success: false, message };
     } else if (
       typeof error === "object" &&
@@ -93,7 +88,7 @@ export const fetchWorkplacesByEmployeeId = async (employeeId: number): Promise<S
       (error as { response?: { data?: { message?: string } } }).response
     ) {
       const err = error as { response?: { data?: { message?: string } } };
-      const message = err.response?.data?.message || "Failed to fetch workplaces.";
+      const message = err.response?.data?.message ?? "Failed to fetch workplaces.";
       return { success: false, message };
     } else if (
       typeof error === "object" &&
@@ -171,7 +166,7 @@ export const getWorkdaysByEmployeeAndFilters = async (
       "response" in error &&
       apiError.response
     ) {
-      const message = apiError.response.data?.message || "Failed to retrieve workdays.";
+      const message = apiError.response.data?.message ?? "Failed to retrieve workdays.";
       return { success: false, message };
     } else if (
       typeof error === "object" &&
@@ -225,7 +220,7 @@ export const downloadWorkdayReport = async (
     let filename = `workday_report_${employeeId}.xlsx`;
     if (contentDisposition) {
       const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
-      if (filenameMatch && filenameMatch[1]) {
+      if (filenameMatch?.[1]) {
         filename = filenameMatch[1];
       }
     }
@@ -267,10 +262,10 @@ export const downloadWorkdayReport = async (
     ) {
       try {
         const errorData = JSON.parse(await apiError.response.data.text());
-        const message = errorData.message || "Failed to download report.";
+        const message = errorData.message ?? "Failed to download report.";
         return { success: false, message };
       } catch {
-        const message = apiError.response.data?.message || "Failed to download report. Server responded with an error.";
+        const message = apiError.response.data?.message ?? "Failed to download report. Server responded with an error.";
         return { success: false, message };
       }
     } else if (
