@@ -32,6 +32,7 @@ export default function WorkdayReportDownloadModal({
   const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
   useEffect(() => {
+    console.log("WorkdayReportDownloadModal useEffect triggered");
     if (!isOpen) return;
 
     const today = new Date();
@@ -48,14 +49,13 @@ export default function WorkdayReportDownloadModal({
       if (response.success && response.data) {
         setWorkplaces(response.data);
       } else {
-        showToast(response.message || "Failed to load workplaces for filter.", "error");
         setWorkplaces([]); 
       }
       setIsLoadingWorkplaces(false);
     };
 
     loadWorkplaces();
-  }, [isOpen, employeeId, showToast]);
+  }, [isOpen, employeeId]);
   if (!isOpen) return null;
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -91,10 +91,10 @@ export default function WorkdayReportDownloadModal({
       );
 
       if (result.success) {
-        showToast(result.message || "Report download initiated successfully!", "success");
+        showToast(result.message ?? "Report download initiated successfully!", "success");
         onClose(); 
       } else {
-        showToast(result.message || "Failed to download report.", "error");
+        showToast(result.message ?? "Failed to download report.", "error");
       }
     } catch (error: unknown) {
       console.error("Error during report download:", error);
@@ -156,7 +156,7 @@ export default function WorkdayReportDownloadModal({
             )}
           </div>
           <div className="modal-action mt-6">
-            <button type="submit" className="btn btn-primary" disabled={isLoadingReport}>
+            <button type="submit" className="btn btn-primary" disabled={isLoadingReport || workplaces.length === 0}>
               {isLoadingReport ? "Downloading..." : "Download Report"}
             </button>
             <button type="button" className="btn btn-ghost" onClick={onClose} disabled={isLoadingReport}>

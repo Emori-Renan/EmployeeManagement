@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import LoadingModal from "../components/Loading";
 import { delay } from "../utils/functions";
 import { useDispatch } from "react-redux";
-import { saveToken, saveUsername } from "../utils/auth";
+import { saveToken } from "../utils/auth";
 import { loginSuccess } from "../store/authSlice";
 import { login } from "../controller/LoginController";
 import { useToast } from "../context/ToastContext";
@@ -59,7 +59,6 @@ export default function RegisterPage() {
             const token = data.token ?? ''
             dispatch(loginSuccess(token));
             saveToken(token);
-            saveUsername(username);
             await delay(3000);
             router.push("/");
             return;
